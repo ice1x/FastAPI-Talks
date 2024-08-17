@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package hello_grpc;
+
+import "google/protobuf/timestamp.proto";
+
+message Request {
+  google.protobuf.Timestamp request_ts = 1;  // Field 1: Request timestamp
+}
+
+message Response {
+  google.protobuf.Timestamp response_ts = 1;  // Field 1: Response timestamp
+}
+
+service GRPCService {
+  rpc GetTimestamp(Request) returns (Response);
+}
+

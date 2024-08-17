@@ -1,0 +1,36 @@
+version: "3.11"
+
+services:
+  grpc_requester:
+    build:
+      context: ./grpc_requester
+      dockerfile: Dockerfile
+    hostname: grpc_requester
+    container_name: grpc_requester
+    ports:
+      - "8000:8000"
+    env_file:
+      - grpc_requester/.env
+    volumes:
+      - ./grpc_requester:/home/grpc_requester
+    networks:
+      - my-net
+
+  grpc_responder:
+    build:
+      context: ./grpc_responder
+      dockerfile: Dockerfile
+    hostname: grpc_responder
+    container_name: grpc_responder
+    ports:
+      - "50051:50051"
+    env_file:
+      - grpc_responder/.env
+    volumes:
+      - ./grpc_responder:/home/grpc_responder
+    networks:
+      - my-net
+
+networks:
+  my-net:
+    external: true
