@@ -1,21 +1,17 @@
-from schemas.orders import OrderCreate, OrderRead
+from schemas.metrics import SchemaRead
 from api.dependencies.grpc.call_grpc_responder import gRPBResponderClient
 
 
-class RestaurantLogic:
-    def __init__(self):
+class RemoteCallLogic:
+    def _get_grpc_responder_timestamp(self, length: int):
+        for _ in range(length):
+            yield gRPBResponderClient().get_ts()
 
-    def _get_grpc_responder_timestamp(self, dessert: str):
-        return gRPBResponderClient().get_ts(order=dessert)
-
-    def build_order(self, order_create: OrderCreate) -> OrderRead:
-        drink = self._get_drink(order_create.drink)
-        meal = self._get_meal(order_create.meal)
-        dessert = self._get_dessert(order_create.dessert)
-
-        return OrderRead(
-            order_id=order_create.order_id,
-            drink=drink["order_status"],
-            meal=meal["order_status"],
-            dessert=dessert["order_status"],
-        )
+    def build_grpc_metrics(self) -> SchemaRead:
+        return [
+            SchemaRead(
+                request_id=request_id,
+                grpc_responder_timestamp=metrics[0]["response_ts"],
+                grpc_requester_timestamp=metrics[1])
+            for request_id, metrics in enumerate(self._get_grpc_responder_timestamp(1000))
+        ]

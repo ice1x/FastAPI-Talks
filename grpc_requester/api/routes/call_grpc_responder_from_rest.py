@@ -1,21 +1,18 @@
 from fastapi import APIRouter, Depends
 
-from schemas.orders import OrderCreate, OrderRead
-from business_logic.restaurants import RestaurantLogic
+from schemas.metrics import SchemaRead
+from business_logic.call_grpc_from_rest import RemoteCallLogic
 
 router = APIRouter()
 
 
-@router.post(
+@router.get(
     "",
     status_code=201,
     name="create_order",
-    response_model=OrderRead,
-    responses={422: {"model": OrderRead}}
+    response_model=list[SchemaRead],
+    responses={422: {"model": SchemaRead}}
 )
-def get_grpc_responder_timestamp(
-    order_create: OrderCreate,
-    restaurant_logic: RestaurantLogic = Depends(RestaurantLogic),
-) -> OrderRead:
+def get_grpc_responder_timestamp(grpc_call_logic: RemoteCallLogic = Depends(RemoteCallLogic)) -> SchemaRead:
 
-    return restaurant_logic.build_order(order_create=order_create)
+    return grpc_call_logic.build_grpc_metrics()
