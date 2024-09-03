@@ -33,9 +33,8 @@ def customize_openapi(func: Callable[..., dict]) -> Callable[..., dict]:
 
     return wrapper
 
+
 app.openapi = customize_openapi(app.openapi)
-
-
 app.include_router(router, prefix=settings.api_prefix)
 
 
