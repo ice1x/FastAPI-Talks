@@ -11,3 +11,4 @@ pytest-grpc==0.8.0
 aiohttp==3.10.5
 pandas==2.2.2
 matplotlib==3.9.2
+strawberry-graphql==0.239.2
