@@ -2,7 +2,7 @@
 Benchmark Comparison Script
 
 This script compares the performance of different communication protocols
-and serialization formats (gRPC, Socket.IO, GraphQL, AVRO, CBOR) by
+and serialization formats (REST, gRPC, Socket.IO, GraphQL, AVRO, CBOR) by
 analyzing response time data collected from benchmark runs.
 """
 
@@ -139,6 +139,29 @@ def process_cbor_data(cbor_data: list) -> pd.DataFrame:
     })
 
 
+def process_rest_data(rest_data: list) -> pd.DataFrame:
+    """
+    Process REST API benchmark data into a pandas DataFrame.
+
+    Args:
+        rest_data: List of REST API benchmark results
+
+    Returns:
+        DataFrame with request_id and response_time columns
+    """
+    response_times = []
+    for item in rest_data:
+        request_ts = pd.to_datetime(item["request_timestamp"])
+        response_ts = pd.to_datetime(item["response_timestamp"])
+        response_time = (response_ts - request_ts).total_seconds()
+        response_times.append(response_time)
+
+    return pd.DataFrame({
+        "request_id": range(len(response_times)),
+        "response_time": response_times
+    })
+
+
 def print_statistics(datasets: dict):
     """
     Print statistical summary for all datasets.
@@ -181,6 +204,7 @@ def plot_comparison(datasets: dict):
 
     # Define colors and markers for consistency
     colors = {
+        "REST": "gray",
         "gRPC": "blue",
         "Socket.IO": "green",
         "GraphQL": "red",
@@ -188,10 +212,11 @@ def plot_comparison(datasets: dict):
         "CBOR": "orange"
     }
     markers = {
-        "gRPC": "o",
+        "REST": "o",
+        "gRPC": "s",
         "Socket.IO": "x",
         "GraphQL": "^",
-        "AVRO": "s",
+        "AVRO": "d",
         "CBOR": "D"
     }
 
@@ -235,6 +260,7 @@ def main():
     print("Loading benchmark data...")
 
     # Read all available benchmark files
+    rest_data = read_metrics(Path("rest_out.txt"))
     grpc_data = read_metrics(Path("grpc_out.txt"))
     socketio_data = read_metrics(Path("sio_out.txt"))
     graphql_data = read_metrics(Path("graphql_out.txt"))
@@ -243,6 +269,10 @@ def main():
 
     # Process data into DataFrames
     datasets = {}
+
+    if rest_data:
+        datasets["REST"] = process_rest_data(rest_data)
+        print("✓ REST data loaded")
 
     if grpc_data:
         datasets["gRPC"] = process_grpc_data(grpc_data)

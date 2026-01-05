@@ -1,12 +1,15 @@
 # FastAPI Communication Protocols & Serialization Benchmark
 
-A comprehensive benchmark comparing different communication protocols and serialization formats using FastAPI: **gRPC**, **Socket.IO**, **GraphQL**, **AVRO**, and **CBOR**.
+A comprehensive benchmark comparing different communication protocols and serialization formats using FastAPI: **REST**, **gRPC**, **Socket.IO**, **GraphQL**, **AVRO**, and **CBOR**.
 
 ## 📋 Overview
 
-This project benchmarks the performance of five popular communication protocols and serialization formats by measuring response times for 1,000 sequential timestamp requests. Each implementation consists of a requester service and a responder service.
+This project benchmarks the performance of six popular communication protocols and serialization formats by measuring response times for 1,000 sequential timestamp requests. Each implementation consists of a requester service and a responder service.
 
 ### Protocols & Formats Tested
+
+**Baseline:**
+- **REST API** - Standard JSON over HTTP/1.1 (baseline for comparison)
 
 **Communication Protocols:**
 - **gRPC** - High-performance RPC framework using Protocol Buffers
@@ -93,6 +96,21 @@ The automated runner will:
 - Generate comparison charts automatically
 
 ### Option 2: Run Manually
+
+#### REST API Benchmark
+
+```bash
+# Terminal 1: Start REST responder
+cd rest_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start REST requester
+cd rest_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/run-benchmark > rest_out.txt
+```
 
 #### gRPC Benchmark
 
@@ -197,6 +215,8 @@ This will generate:
 
 ```
 FastAPI-Talks/
+├── rest_requester/          # REST API client implementation
+├── rest_responder/          # REST API server implementation
 ├── grpc_requester/          # gRPC client implementation
 ├── grpc_responder/          # gRPC server implementation
 ├── sio_requester/           # Socket.IO client implementation
@@ -207,6 +227,7 @@ FastAPI-Talks/
 ├── avro_responder/          # AVRO server implementation
 ├── cbor_requester/          # CBOR client implementation
 ├── cbor_responder/          # CBOR server implementation
+├── tests/                   # Test suite
 ├── compare.py               # Benchmark comparison script
 ├── run_benchmarks.py        # Automated benchmark runner
 ├── requirements.txt         # Python dependencies

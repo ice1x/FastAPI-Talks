@@ -11,7 +11,8 @@ from compare import (
     process_socketio_data,
     process_graphql_data,
     process_avro_data,
-    process_cbor_data
+    process_cbor_data,
+    process_rest_data
 )
 
 
@@ -96,3 +97,21 @@ class TestCompareScript:
         assert isinstance(df, pd.DataFrame)
         assert len(df) == 1
         assert "response_time" in df.columns
+
+    def test_process_rest_data(self):
+        """Test processing REST API benchmark data."""
+        sample_data = [
+            {
+                "request_timestamp": "2024-01-01T00:00:00",
+                "response_timestamp": "2024-01-01T00:00:01"
+            },
+            {
+                "request_timestamp": "2024-01-01T00:00:02",
+                "response_timestamp": "2024-01-01T00:00:03"
+            }
+        ]
+        df = process_rest_data(sample_data)
+        assert isinstance(df, pd.DataFrame)
+        assert len(df) == 2
+        assert "response_time" in df.columns
+        assert df["response_time"].iloc[0] == 1.0

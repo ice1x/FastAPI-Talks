@@ -41,9 +41,12 @@ ENV/
 
 # Benchmark results
 *_out.txt
+rest_out.txt
 grpc_out.txt
 sio_out.txt
 graphql_out.txt
+avro_out.txt
+cbor_out.txt
 results/
 
 # Generated protobuf files
