@@ -21,6 +21,7 @@ class Timestamps:
         request_timestamp: The timestamp from the client request
         response_timestamp: The timestamp when the server processed the request
     """
+
     request_timestamp: datetime
     response_timestamp: datetime
 
@@ -44,8 +45,7 @@ class Query:
         """
         response_timestamp = datetime.utcnow()
         return Timestamps(
-            request_timestamp=request_timestamp,
-            response_timestamp=response_timestamp
+            request_timestamp=request_timestamp, response_timestamp=response_timestamp
         )
 
 
@@ -56,7 +56,7 @@ schema = strawberry.Schema(Query)
 app = FastAPI(
     title="GraphQL Responder Service",
     description="Benchmark responder for GraphQL timestamp queries",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Add the GraphQL router
@@ -67,8 +67,4 @@ app.include_router(graphql_app, prefix="/graphql")
 @app.get("/")
 async def root():
     """Health check endpoint."""
-    return {
-        "service": "GraphQL Responder",
-        "status": "running",
-        "endpoint": "/graphql"
-    }
+    return {"service": "GraphQL Responder", "status": "running", "endpoint": "/graphql"}

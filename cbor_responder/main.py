@@ -14,7 +14,7 @@ from fastapi import FastAPI, Request, Response
 app = FastAPI(
     title="CBOR Responder Service",
     description="Benchmark responder for CBOR serialization",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -40,10 +40,7 @@ async def handle_timestamp(request: Request):
     data["response_timestamp"] = datetime.now().isoformat()
 
     # Encode and return response
-    return Response(
-        content=cbor2.dumps(data),
-        media_type="application/cbor"
-    )
+    return Response(content=cbor2.dumps(data), media_type="application/cbor")
 
 
 @app.get("/")
@@ -53,5 +50,5 @@ async def root():
         "service": "CBOR Responder",
         "status": "running",
         "format": "CBOR (Concise Binary Object Representation)",
-        "message": "Ready to process CBOR requests"
+        "message": "Ready to process CBOR requests",
     }

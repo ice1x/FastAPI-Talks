@@ -16,7 +16,7 @@ from fastapi import FastAPI
 app = FastAPI(
     title="GraphQL Requester Service",
     description="Benchmark client for GraphQL timestamp queries",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # GraphQL query template for fetching timestamps
@@ -46,16 +46,10 @@ async def fetch_timestamps(session: httpx.AsyncClient, request_timestamp: dateti
     """
     payload = {
         "query": GRAPHQL_QUERY,
-        "variables": {
-            "requestTimestamp": request_timestamp.isoformat()
-        }
+        "variables": {"requestTimestamp": request_timestamp.isoformat()},
     }
 
-    response = await session.post(
-        GRAPHQL_ENDPOINT,
-        json=payload,
-        timeout=10.0
-    )
+    response = await session.post(GRAPHQL_ENDPOINT, json=payload, timeout=10.0)
 
     data = response.json()
     return data["data"]["getTimestamps"]
@@ -78,10 +72,7 @@ async def aggregate_timestamps():
     timestamps_list = []
 
     # Configure connection pooling for optimal performance
-    limits = httpx.Limits(
-        max_connections=100,
-        max_keepalive_connections=20
-    )
+    limits = httpx.Limits(max_connections=100, max_keepalive_connections=20)
 
     async with httpx.AsyncClient(limits=limits) as client:
         # Process requests in batches
@@ -89,10 +80,7 @@ async def aggregate_timestamps():
             request_timestamp = datetime.utcnow()
 
             # Create batch of concurrent requests
-            tasks = [
-                fetch_timestamps(client, request_timestamp)
-                for _ in range(batch_size)
-            ]
+            tasks = [fetch_timestamps(client, request_timestamp) for _ in range(batch_size)]
 
             # Execute batch concurrently
             results = await asyncio.gather(*tasks)
@@ -107,5 +95,5 @@ async def root():
     return {
         "service": "GraphQL Requester",
         "status": "running",
-        "endpoint": "/aggregate-timestamps"
+        "endpoint": "/aggregate-timestamps",
     }

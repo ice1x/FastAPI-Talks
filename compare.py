@@ -60,14 +60,10 @@ def process_socketio_data(socketio_data: dict) -> pd.DataFrame:
     """
     request_ts = pd.to_datetime(socketio_data["request_ts"])
     response_times = [
-        (pd.to_datetime(ts) - request_ts).total_seconds()
-        for ts in socketio_data["respond_ts"]
+        (pd.to_datetime(ts) - request_ts).total_seconds() for ts in socketio_data["respond_ts"]
     ]
 
-    return pd.DataFrame({
-        "request_id": range(len(response_times)),
-        "response_time": response_times
-    })
+    return pd.DataFrame({"request_id": range(len(response_times)), "response_time": response_times})
 
 
 def process_graphql_data(graphql_data: list) -> pd.DataFrame:
@@ -87,10 +83,7 @@ def process_graphql_data(graphql_data: list) -> pd.DataFrame:
         response_time = (response_ts - request_ts).total_seconds()
         response_times.append(response_time)
 
-    return pd.DataFrame({
-        "request_id": range(len(response_times)),
-        "response_time": response_times
-    })
+    return pd.DataFrame({"request_id": range(len(response_times)), "response_time": response_times})
 
 
 def process_avro_data(avro_data: list) -> pd.DataFrame:
@@ -110,10 +103,7 @@ def process_avro_data(avro_data: list) -> pd.DataFrame:
         response_time = (response_ts - request_ts).total_seconds()
         response_times.append(response_time)
 
-    return pd.DataFrame({
-        "request_id": range(len(response_times)),
-        "response_time": response_times
-    })
+    return pd.DataFrame({"request_id": range(len(response_times)), "response_time": response_times})
 
 
 def process_cbor_data(cbor_data: list) -> pd.DataFrame:
@@ -133,10 +123,7 @@ def process_cbor_data(cbor_data: list) -> pd.DataFrame:
         response_time = (response_ts - request_ts).total_seconds()
         response_times.append(response_time)
 
-    return pd.DataFrame({
-        "request_id": range(len(response_times)),
-        "response_time": response_times
-    })
+    return pd.DataFrame({"request_id": range(len(response_times)), "response_time": response_times})
 
 
 def process_rest_data(rest_data: list) -> pd.DataFrame:
@@ -156,10 +143,7 @@ def process_rest_data(rest_data: list) -> pd.DataFrame:
         response_time = (response_ts - request_ts).total_seconds()
         response_times.append(response_time)
 
-    return pd.DataFrame({
-        "request_id": range(len(response_times)),
-        "response_time": response_times
-    })
+    return pd.DataFrame({"request_id": range(len(response_times)), "response_time": response_times})
 
 
 def print_statistics(datasets: dict):
@@ -209,16 +193,9 @@ def plot_comparison(datasets: dict):
         "Socket.IO": "green",
         "GraphQL": "red",
         "AVRO": "purple",
-        "CBOR": "orange"
+        "CBOR": "orange",
     }
-    markers = {
-        "REST": "o",
-        "gRPC": "s",
-        "Socket.IO": "x",
-        "GraphQL": "^",
-        "AVRO": "d",
-        "CBOR": "D"
-    }
+    markers = {"REST": "o", "gRPC": "s", "Socket.IO": "x", "GraphQL": "^", "AVRO": "d", "CBOR": "D"}
 
     # Plot response times for each protocol
     for name, df in datasets.items():
@@ -228,7 +205,7 @@ def plot_comparison(datasets: dict):
             marker=markers.get(name, "s"),
             label=f"{name} Response Time",
             alpha=0.6,
-            markersize=3
+            markersize=3,
         )
 
         # Plot average line
@@ -238,7 +215,7 @@ def plot_comparison(datasets: dict):
             color=colors.get(name, "gray"),
             linestyle="--",
             label=f"{name} Avg: {avg_time:.6f}s",
-            alpha=0.8
+            alpha=0.8,
         )
 
     # Customize the chart

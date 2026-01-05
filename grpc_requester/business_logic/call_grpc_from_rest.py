@@ -44,9 +44,7 @@ class RemoteCallLogic:
             SchemaRead(
                 request_id=request_id,
                 grpc_responder_timestamp=metrics[0]["response_ts"],
-                grpc_requester_timestamp=metrics[1]
+                grpc_requester_timestamp=metrics[1],
             )
-            for request_id, metrics in enumerate(
-                self._get_grpc_responder_timestamp(1000)
-            )
+            for request_id, metrics in enumerate(self._get_grpc_responder_timestamp(1000))
         ]

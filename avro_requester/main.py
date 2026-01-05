@@ -17,7 +17,8 @@ import avro.schema
 from fastapi import FastAPI
 
 # Avro schema for timestamp messages
-TIMESTAMP_SCHEMA = avro.schema.parse("""
+TIMESTAMP_SCHEMA = avro.schema.parse(
+    """
 {
     "type": "record",
     "name": "Timestamp",
@@ -26,7 +27,8 @@ TIMESTAMP_SCHEMA = avro.schema.parse("""
         {"name": "response_timestamp", "type": "string"}
     ]
 }
-""")
+"""
+)
 
 # Configuration
 AVRO_RESPONDER_URL = "http://localhost:8000/timestamp"
@@ -37,7 +39,7 @@ TIMEOUT = 30
 app = FastAPI(
     title="AVRO Requester Service",
     description="Benchmark client for Avro serialization",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -63,7 +65,7 @@ async def send_avro_request(client: httpx.AsyncClient, request_ts: str) -> dict:
         AVRO_RESPONDER_URL,
         content=bytes_writer.getvalue(),
         headers={"Content-Type": "application/avro"},
-        timeout=TIMEOUT
+        timeout=TIMEOUT,
     )
 
     # Deserialize response
@@ -92,11 +94,13 @@ async def run_benchmark():
         for i in range(REQUEST_COUNT):
             request_ts = datetime.now().isoformat()
             result = await send_avro_request(client, request_ts)
-            results.append({
-                "request_id": i,
-                "request_timestamp": result["request_timestamp"],
-                "response_timestamp": result["response_timestamp"]
-            })
+            results.append(
+                {
+                    "request_id": i,
+                    "request_timestamp": result["request_timestamp"],
+                    "response_timestamp": result["response_timestamp"],
+                }
+            )
 
     return results
 
@@ -108,5 +112,5 @@ async def root():
         "service": "AVRO Requester",
         "status": "running",
         "format": "Apache Avro Binary",
-        "endpoint": "/run-benchmark"
+        "endpoint": "/run-benchmark",
     }

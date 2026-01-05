@@ -11,7 +11,9 @@ router = APIRouter()
     status_code=201,
     name="call_nested_grpc",
     response_model=list[SchemaRead],
-    responses={422: {"model": SchemaRead}}
+    responses={422: {"model": SchemaRead}},
 )
-def get_grpc_responder_timestamp(grpc_call_logic: RemoteCallLogic = Depends(RemoteCallLogic)) -> SchemaRead:
+def get_grpc_responder_timestamp(
+    grpc_call_logic: RemoteCallLogic = Depends(RemoteCallLogic),
+) -> SchemaRead:
     return grpc_call_logic.build_grpc_metrics()

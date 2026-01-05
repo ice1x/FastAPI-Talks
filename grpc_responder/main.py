@@ -15,9 +15,7 @@ class ResponseTimestampService(BaseServicer):
 
 def serve():
     interceptors = [ExceptionToStatusInterceptor()]
-    server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors
-    )
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors)
     add_GRPCServiceServicer_to_server(ResponseTimestampService(), server)
     server.add_insecure_port("[::]:50051")
     server.start()

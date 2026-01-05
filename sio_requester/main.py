@@ -56,7 +56,7 @@ app = FastAPI(
     lifespan=lifespan,
     title="Socket.IO Requester Service",
     description="Benchmark client for Socket.IO timestamp queries",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -90,15 +90,12 @@ async def send_timestamp():
         await sio.emit("timestamp", {"request_ts": request_ts})
 
         # Wait for all responses to be received
-        await asyncio.wait_for(
-            timestamps_received_event.wait(),
-            timeout=RESPONSE_TIMEOUT
-        )
+        await asyncio.wait_for(timestamps_received_event.wait(), timeout=RESPONSE_TIMEOUT)
 
         return {
             "status": "timestamps received",
             "request_ts": request_ts,
-            "respond_ts": timestamp_list
+            "respond_ts": timestamp_list,
         }
 
     except asyncio.TimeoutError:
@@ -107,7 +104,7 @@ async def send_timestamp():
             "request_ts": request_ts,
             "respond_ts": timestamp_list,
             "received_count": len(timestamp_list),
-            "expected_count": EXPECTED_RESPONSES
+            "expected_count": EXPECTED_RESPONSES,
         }
 
     except Exception as e:
@@ -115,7 +112,7 @@ async def send_timestamp():
             "status": "error",
             "error": str(e),
             "request_ts": request_ts,
-            "respond_ts": timestamp_list
+            "respond_ts": timestamp_list,
         }
 
 
@@ -145,5 +142,5 @@ async def root():
         "service": "Socket.IO Requester",
         "status": "running" if sio.connected else "disconnected",
         "server": SOCKETIO_SERVER_URL,
-        "endpoint": "/send-timestamp"
+        "endpoint": "/send-timestamp",
     }

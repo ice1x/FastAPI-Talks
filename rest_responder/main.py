@@ -14,11 +14,13 @@ from pydantic import BaseModel
 
 class TimestampRequest(BaseModel):
     """Request model for timestamp endpoint."""
+
     request_timestamp: str
 
 
 class TimestampResponse(BaseModel):
     """Response model for timestamp endpoint."""
+
     request_timestamp: str
     response_timestamp: str
 
@@ -26,7 +28,7 @@ class TimestampResponse(BaseModel):
 app = FastAPI(
     title="REST API Responder Service",
     description="Benchmark responder for REST API with JSON",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -45,8 +47,7 @@ async def handle_timestamp(request: TimestampRequest) -> TimestampResponse:
         TimestampResponse with both request and response timestamps
     """
     return TimestampResponse(
-        request_timestamp=request.request_timestamp,
-        response_timestamp=datetime.now().isoformat()
+        request_timestamp=request.request_timestamp, response_timestamp=datetime.now().isoformat()
     )
 
 
@@ -57,5 +58,5 @@ async def root():
         "service": "REST API Responder",
         "status": "running",
         "format": "JSON over HTTP",
-        "message": "Ready to process REST requests"
+        "message": "Ready to process REST requests",
     }

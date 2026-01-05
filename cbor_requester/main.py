@@ -22,7 +22,7 @@ TIMEOUT = 30
 app = FastAPI(
     title="CBOR Requester Service",
     description="Benchmark client for CBOR serialization",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -38,17 +38,14 @@ async def send_cbor_request(client: httpx.AsyncClient, request_ts: str) -> dict:
         Dictionary with request and response timestamps
     """
     # Encode request with CBOR
-    payload = cbor2.dumps({
-        "request_timestamp": request_ts,
-        "response_timestamp": ""
-    })
+    payload = cbor2.dumps({"request_timestamp": request_ts, "response_timestamp": ""})
 
     # Send request
     response = await client.post(
         CBOR_RESPONDER_URL,
         content=payload,
         headers={"Content-Type": "application/cbor"},
-        timeout=TIMEOUT
+        timeout=TIMEOUT,
     )
 
     # Decode response
@@ -73,11 +70,13 @@ async def run_benchmark():
         for i in range(REQUEST_COUNT):
             request_ts = datetime.now().isoformat()
             result = await send_cbor_request(client, request_ts)
-            results.append({
-                "request_id": i,
-                "request_timestamp": result["request_timestamp"],
-                "response_timestamp": result["response_timestamp"]
-            })
+            results.append(
+                {
+                    "request_id": i,
+                    "request_timestamp": result["request_timestamp"],
+                    "response_timestamp": result["response_timestamp"],
+                }
+            )
 
     return results
 
@@ -89,5 +88,5 @@ async def root():
         "service": "CBOR Requester",
         "status": "running",
         "format": "CBOR (Concise Binary Object Representation)",
-        "endpoint": "/run-benchmark"
+        "endpoint": "/run-benchmark",
     }

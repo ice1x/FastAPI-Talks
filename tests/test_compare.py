@@ -12,7 +12,7 @@ from compare import (
     process_graphql_data,
     process_avro_data,
     process_cbor_data,
-    process_rest_data
+    process_rest_data,
 )
 
 
@@ -25,13 +25,13 @@ class TestCompareScript:
             {
                 "request_id": 0,
                 "grpc_requester_timestamp": "2024-01-01T00:00:00",
-                "grpc_responder_timestamp": "2024-01-01T00:00:01"
+                "grpc_responder_timestamp": "2024-01-01T00:00:01",
             },
             {
                 "request_id": 1,
                 "grpc_requester_timestamp": "2024-01-01T00:00:02",
-                "grpc_responder_timestamp": "2024-01-01T00:00:03"
-            }
+                "grpc_responder_timestamp": "2024-01-01T00:00:03",
+            },
         ]
         df = process_grpc_data(sample_data)
         assert isinstance(df, pd.DataFrame)
@@ -44,10 +44,7 @@ class TestCompareScript:
         """Test processing Socket.IO benchmark data."""
         sample_data = {
             "request_ts": "2024-01-01T00:00:00",
-            "respond_ts": [
-                "2024-01-01T00:00:01",
-                "2024-01-01T00:00:02"
-            ]
+            "respond_ts": ["2024-01-01T00:00:01", "2024-01-01T00:00:02"],
         }
         df = process_socketio_data(sample_data)
         assert isinstance(df, pd.DataFrame)
@@ -58,14 +55,8 @@ class TestCompareScript:
     def test_process_graphql_data(self):
         """Test processing GraphQL benchmark data."""
         sample_data = [
-            {
-                "requestTimestamp": "2024-01-01T00:00:00",
-                "responseTimestamp": "2024-01-01T00:00:01"
-            },
-            {
-                "requestTimestamp": "2024-01-01T00:00:02",
-                "responseTimestamp": "2024-01-01T00:00:03"
-            }
+            {"requestTimestamp": "2024-01-01T00:00:00", "responseTimestamp": "2024-01-01T00:00:01"},
+            {"requestTimestamp": "2024-01-01T00:00:02", "responseTimestamp": "2024-01-01T00:00:03"},
         ]
         df = process_graphql_data(sample_data)
         assert isinstance(df, pd.DataFrame)
@@ -77,7 +68,7 @@ class TestCompareScript:
         sample_data = [
             {
                 "request_timestamp": "2024-01-01T00:00:00",
-                "response_timestamp": "2024-01-01T00:00:01"
+                "response_timestamp": "2024-01-01T00:00:01",
             }
         ]
         df = process_avro_data(sample_data)
@@ -90,7 +81,7 @@ class TestCompareScript:
         sample_data = [
             {
                 "request_timestamp": "2024-01-01T00:00:00",
-                "response_timestamp": "2024-01-01T00:00:01"
+                "response_timestamp": "2024-01-01T00:00:01",
             }
         ]
         df = process_cbor_data(sample_data)
@@ -103,12 +94,12 @@ class TestCompareScript:
         sample_data = [
             {
                 "request_timestamp": "2024-01-01T00:00:00",
-                "response_timestamp": "2024-01-01T00:00:01"
+                "response_timestamp": "2024-01-01T00:00:01",
             },
             {
                 "request_timestamp": "2024-01-01T00:00:02",
-                "response_timestamp": "2024-01-01T00:00:03"
-            }
+                "response_timestamp": "2024-01-01T00:00:03",
+            },
         ]
         df = process_rest_data(sample_data)
         assert isinstance(df, pd.DataFrame)

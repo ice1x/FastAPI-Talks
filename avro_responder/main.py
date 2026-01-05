@@ -14,7 +14,8 @@ import avro.schema
 from fastapi import FastAPI, Request, Response
 
 # Avro schema for timestamp messages
-TIMESTAMP_SCHEMA = avro.schema.parse("""
+TIMESTAMP_SCHEMA = avro.schema.parse(
+    """
 {
     "type": "record",
     "name": "Timestamp",
@@ -23,12 +24,13 @@ TIMESTAMP_SCHEMA = avro.schema.parse("""
         {"name": "response_timestamp", "type": "string"}
     ]
 }
-""")
+"""
+)
 
 app = FastAPI(
     title="AVRO Responder Service",
     description="Benchmark responder for Avro serialization",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -64,10 +66,7 @@ async def handle_timestamp(request: Request):
     encoder = avro.io.BinaryEncoder(bytes_writer)
     writer.write(data, encoder)
 
-    return Response(
-        content=bytes_writer.getvalue(),
-        media_type="application/avro"
-    )
+    return Response(content=bytes_writer.getvalue(), media_type="application/avro")
 
 
 @app.get("/")
@@ -77,5 +76,5 @@ async def root():
         "service": "AVRO Responder",
         "status": "running",
         "format": "Apache Avro Binary",
-        "message": "Ready to process Avro requests"
+        "message": "Ready to process Avro requests",
     }

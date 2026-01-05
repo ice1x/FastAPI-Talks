@@ -18,7 +18,7 @@ sio = socketio.AsyncServer(async_mode="asgi")
 app = FastAPI(
     title="Socket.IO Responder Service",
     description="Benchmark responder for Socket.IO timestamp queries",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Integrate Socket.IO server with FastAPI
@@ -31,7 +31,7 @@ def read_root():
     return {
         "service": "Socket.IO Responder",
         "status": "running",
-        "message": "Socket.IO server is running and ready to accept connections"
+        "message": "Socket.IO server is running and ready to accept connections",
     }
 
 
@@ -77,9 +77,7 @@ async def timestamp(sid, data):
     for i in range(1000):
         respond_ts = datetime.now().isoformat()
         await sio.emit(
-            "timestamp_response",
-            {"request_ts": request_ts, "respond_ts": respond_ts},
-            room=sid
+            "timestamp_response", {"request_ts": request_ts, "respond_ts": respond_ts}, room=sid
         )
 
     print(f"✓ Sent 1,000 responses to client {sid}")
@@ -88,4 +86,5 @@ async def timestamp(sid, data):
 # Run the application with Uvicorn
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(sio_app, host="0.0.0.0", port=8000)

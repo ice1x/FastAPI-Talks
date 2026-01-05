@@ -27,12 +27,7 @@ class BenchmarkRunner:
         self.processes = []
 
     def start_service(
-        self,
-        name: str,
-        directory: str,
-        command: list,
-        port: int,
-        wait_time: int = 3
+        self, name: str, directory: str, command: list, port: int, wait_time: int = 3
     ) -> subprocess.Popen:
         """
         Start a service process.
@@ -49,10 +44,7 @@ class BenchmarkRunner:
         """
         print(f"Starting {name}...")
         process = subprocess.Popen(
-            command,
-            cwd=directory,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            command, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         self.processes.append(process)
         time.sleep(wait_time)
@@ -68,12 +60,7 @@ class BenchmarkRunner:
         print(f"✓ {name} started on port {port}")
         return process
 
-    async def execute_benchmark(
-        self,
-        name: str,
-        url: str,
-        output_file: str
-    ) -> bool:
+    async def execute_benchmark(self, name: str, url: str, output_file: str) -> bool:
         """
         Execute a benchmark by sending HTTP request.
 
@@ -92,7 +79,7 @@ class BenchmarkRunner:
                 response.raise_for_status()
 
                 # Save results
-                with open(output_file, 'w') as f:
+                with open(output_file, "w") as f:
                     if isinstance(response.json(), list):
                         json.dump(response.json(), f)
                     else:
@@ -125,10 +112,7 @@ class BenchmarkRunner:
 
         # Start responder
         responder = self.start_service(
-            "gRPC Responder",
-            "grpc_responder",
-            [sys.executable, "main.py"],
-            50051
+            "gRPC Responder", "grpc_responder", [sys.executable, "main.py"], 50051
         )
         if not responder:
             return False
@@ -138,16 +122,14 @@ class BenchmarkRunner:
             "gRPC Requester",
             "grpc_requester",
             ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
-            8000
+            8000,
         )
         if not requester:
             return False
 
         # Execute benchmark
         success = await self.execute_benchmark(
-            "gRPC",
-            "http://127.0.0.1:8000/api/run",
-            "grpc_out.txt"
+            "gRPC", "http://127.0.0.1:8000/api/run", "grpc_out.txt"
         )
 
         # Stop services
@@ -168,7 +150,7 @@ class BenchmarkRunner:
             "Socket.IO Responder",
             "sio_responder",
             ["uvicorn", "main:sio_app", "--host", "0.0.0.0", "--port", "8000"],
-            8000
+            8000,
         )
         if not responder:
             return False
@@ -179,16 +161,14 @@ class BenchmarkRunner:
             "sio_requester",
             ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"],
             8080,
-            wait_time=5  # Extra time for Socket.IO connection
+            wait_time=5,  # Extra time for Socket.IO connection
         )
         if not requester:
             return False
 
         # Execute benchmark
         success = await self.execute_benchmark(
-            "Socket.IO",
-            "http://127.0.0.1:8080/send-timestamp",
-            "sio_out.txt"
+            "Socket.IO", "http://127.0.0.1:8080/send-timestamp", "sio_out.txt"
         )
 
         # Stop services
@@ -209,7 +189,7 @@ class BenchmarkRunner:
             "GraphQL Responder",
             "graphql_responder",
             ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
-            8000
+            8000,
         )
         if not responder:
             return False
@@ -219,16 +199,14 @@ class BenchmarkRunner:
             "GraphQL Requester",
             "graphql_requester",
             ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"],
-            8080
+            8080,
         )
         if not requester:
             return False
 
         # Execute benchmark
         success = await self.execute_benchmark(
-            "GraphQL",
-            "http://127.0.0.1:8080/aggregate-timestamps",
-            "graphql_out.txt"
+            "GraphQL", "http://127.0.0.1:8080/aggregate-timestamps", "graphql_out.txt"
         )
 
         # Stop services
@@ -250,11 +228,7 @@ class BenchmarkRunner:
         print("\nEach benchmark sends 1,000 requests and measures response time.")
         print("=" * 60)
 
-        results = {
-            "gRPC": False,
-            "Socket.IO": False,
-            "GraphQL": False
-        }
+        results = {"gRPC": False, "Socket.IO": False, "GraphQL": False}
 
         try:
             results["gRPC"] = await self.run_grpc_benchmark()
