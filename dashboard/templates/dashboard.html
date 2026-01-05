@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmark Metrics Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Benchmark Metrics Dashboard</h1>
+            <p class="subtitle">Real-time protocol performance analysis</p>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Total Runs</div>
+                <div class="stat-value" id="totalRuns">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Metrics</div>
+                <div class="stat-value" id="totalMetrics">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Protocols</div>
+                <div class="stat-value" id="protocolCount">-</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn btn-primary" onclick="importLegacy()">Import Legacy Results</button>
+            <button class="btn btn-secondary" onclick="loadLatest()">Refresh Latest</button>
+            <select id="protocolFilter" onchange="filterProtocol()">
+                <option value="">All Protocols</option>
+                <option value="REST">REST</option>
+                <option value="gRPC">gRPC</option>
+                <option value="Socket.IO">Socket.IO</option>
+                <option value="GraphQL">GraphQL</option>
+                <option value="AVRO">AVRO</option>
+                <option value="CBOR">CBOR</option>
+            </select>
+        </div>
+
+        <!-- Comparison Chart -->
+        <div class="chart-container">
+            <h2>Protocol Comparison - Latest Results</h2>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+
+        <!-- Latency Distribution Chart -->
+        <div class="chart-container">
+            <h2>Latency Distribution</h2>
+            <canvas id="distributionChart"></canvas>
+        </div>
+
+        <!-- Runs Table -->
+        <div class="table-container">
+            <h2>Recent Benchmark Runs</h2>
+            <table id="runsTable">
+                <thead>
+                    <tr>
+                        <th>Protocol</th>
+                        <th>Run ID</th>
+                        <th>Timestamp</th>
+                        <th>Mean (s)</th>
+                        <th>Median (s)</th>
+                        <th>P95 (s)</th>
+                        <th>P99 (s)</th>
+                        <th>Count</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="runsTableBody">
+                    <tr>
+                        <td colspan="9" class="loading">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Run Details Modal -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle">Run Details</h2>
+                <div id="modalBody"></div>
+                <canvas id="detailsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
