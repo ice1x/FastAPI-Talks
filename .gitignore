@@ -58,7 +58,7 @@ pb/
 *.svg
 plots/
 
-# pytest
+# Testing
 .pytest_cache/
 .tox/
 .coverage
@@ -66,6 +66,10 @@ plots/
 htmlcov/
 *.cover
 .hypothesis/
+coverage.xml
+.cache/
+nosetests.xml
+test-results/
 
 # mypy
 .mypy_cache/

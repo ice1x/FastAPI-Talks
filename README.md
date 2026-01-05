@@ -216,6 +216,70 @@ FastAPI-Talks/
 └── README.md                # This file
 ```
 
+## 🛠️ Development
+
+### Testing
+
+The project includes comprehensive test coverage with pytest:
+
+```bash
+# Run all tests
+make test
+
+# Run tests with coverage report
+make test-cov
+
+# Run specific test file
+pytest tests/test_grpc.py -v
+```
+
+### Code Quality
+
+The project uses multiple linters to ensure code quality:
+
+```bash
+# Run all linters (black, isort, flake8, mypy)
+make lint
+
+# Format code automatically
+make format
+
+# Run type checking
+make type-check
+```
+
+### Pre-commit Hooks
+
+Install pre-commit hooks to automatically check code before commits:
+
+```bash
+# Install pre-commit hooks
+make pre-commit-install
+
+# Run pre-commit manually
+pre-commit run --all-files
+```
+
+### CI/CD
+
+GitHub Actions automatically runs tests and linters on:
+- All pushes to `main`, `develop`, and `claude/*` branches
+- All pull requests
+
+Badge status: ![CI](https://github.com/ice1x/FastAPI-Talks/workflows/CI/badge.svg)
+
+### Development Setup
+
+For development with all tools:
+
+```bash
+# Complete development setup
+make setup-dev
+
+# Run all CI checks locally
+make ci
+```
+
 ## 🛠️ Makefile Commands
 
 The project includes a Makefile for convenient operations:
@@ -223,12 +287,20 @@ The project includes a Makefile for convenient operations:
 ```bash
 make help              # Show all available commands
 make install           # Install Python dependencies
+make install-dev       # Install development dependencies
 make compile-proto     # Compile Protocol Buffer files
 make setup             # Complete setup (install + compile)
+make setup-dev         # Development setup (install-dev + compile + hooks)
 make run-benchmarks    # Run all benchmarks automatically
 make compare           # Compare benchmark results
-make clean             # Remove generated files and results
 make test              # Run tests
+make test-cov          # Run tests with coverage report
+make lint              # Run all linters
+make format            # Format code with black and isort
+make type-check        # Run mypy type checking
+make pre-commit-install # Install pre-commit hooks
+make ci                # Run all CI checks locally
+make clean             # Remove generated files and results
 ```
 
 ## 🔧 Configuration
