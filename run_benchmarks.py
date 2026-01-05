@@ -100,7 +100,7 @@ class BenchmarkRunner:
             try:
                 process.terminate()
                 process.wait(timeout=5)
-            except:
+            except (subprocess.TimeoutExpired, Exception):
                 process.kill()
         print("✓ All services stopped")
 

@@ -76,7 +76,6 @@ async def send_timestamp():
         - respond_ts: List of response timestamps
     """
     global timestamp_list
-    global timestamps_received_event
 
     # Reset state for new benchmark run
     timestamp_list = []
@@ -124,9 +123,6 @@ async def timestamp_response(data):
     Args:
         data: Dictionary containing the response timestamp
     """
-    global timestamp_list
-    global timestamps_received_event
-
     # Append the received timestamp to the list
     timestamp_list.append(data["respond_ts"])
 
