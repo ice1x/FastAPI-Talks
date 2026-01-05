@@ -7,13 +7,13 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
-
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10hello_grpc.proto\x12\nhello_grpc\x1a\x1fgoogle/protobuf/timestamp.proto\"9\n\x07Request\x12.\n\nrequest_ts\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\";\n\x08Response\x12/\n\x0bresponse_ts\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp2H\n\x0bGRPCService\x12\x39\n\x0cGetTimestamp\x12\x13.hello_grpc.Request\x1a\x14.hello_grpc.Responseb\x06proto3')
 

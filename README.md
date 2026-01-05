@@ -1,33 +1,367 @@
-# Compile protobuf
-$ python -m grpc_tools.protoc --python_out=./pb --grpc_python_out=./pb -I=./protos hello_grpc.proto
+# FastAPI Communication Protocols & Serialization Benchmark
 
-# Run gRPC responder and requester and collect metrics
-$ cd ./grpc_responder/
+A comprehensive benchmark comparing different communication protocols and serialization formats using FastAPI: **REST**, **gRPC**, **Socket.IO**, **GraphQL**, **AVRO**, and **CBOR**.
 
-$ python main.py
+## 📋 Overview
 
-$ cd ./grpc_requester/
+This project benchmarks the performance of six popular communication protocols and serialization formats by measuring response times for 1,000 sequential timestamp requests. Each implementation consists of a requester service and a responder service.
 
-$ uvicorn main:app --host 0.0.0.0
+### Protocols & Formats Tested
 
-$ cd ../
+**Baseline:**
+- **REST API** - Standard JSON over HTTP/1.1 (baseline for comparison)
 
-$ curl http://0.0.0.0:8000/api/run > ./grpc_out.txt
+**Communication Protocols:**
+- **gRPC** - High-performance RPC framework using Protocol Buffers
+- **Socket.IO** - WebSocket-based bidirectional event-driven communication
+- **GraphQL** - Query language for APIs with flexible data fetching
 
-# Run socket.io responder and requester and collect metrics
-$ cd ./sio_responder/
+**Serialization Formats:**
+- **AVRO** - Apache Avro binary serialization format
+- **CBOR** - Concise Binary Object Representation (binary JSON)
 
-$ uvicorn main:sio_app --host 0.0.0.0
+## 🎯 Features
 
-$ cd ./sio_requester/
+- Automated benchmark execution for all protocols
+- Response time measurement and statistical analysis
+- Visual comparison charts using matplotlib
+- Docker support for consistent testing environments
+- Modular architecture for easy extension
 
-$ uvicorn main:app --host 0.0.0.0 --port 8080
+## 📦 Prerequisites
 
-$ cd ../
+- Python 3.11+
+- pip package manager
+- (Optional) Docker and Docker Compose
 
-$ curl http://0.0.0.0:8000/send-timestamp > ./sio_out.txt
+## 🚀 Quick Start
 
-# Compare
-$ python ./compere.py
+### Automated Setup (Recommended)
 
+```bash
+# Clone the repository
+git clone https://github.com/ice1x/FastAPI-Talks.git
+cd FastAPI-Talks
+
+# Complete setup (install dependencies + compile protobuf)
+make setup
+
+# Run all benchmarks automatically
+make run-benchmarks
+```
+
+That's it! The automated runner will execute all benchmarks and generate comparison results.
+
+### Manual Installation
+
+If you prefer manual setup:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/ice1x/FastAPI-Talks.git
+cd FastAPI-Talks
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Compile Protocol Buffers
+make compile-proto
+# Or manually:
+cd grpc_responder
+python -m grpc_tools.protoc --python_out=./pb --grpc_python_out=./pb -I=./protos hello_grpc.proto
+cd ../grpc_requester
+python -m grpc_tools.protoc --python_out=./pb --grpc_python_out=./pb -I=./protos hello_grpc.proto
+cd ..
+```
+
+## 🏃 Running Benchmarks
+
+### Option 1: Automated (Recommended)
+
+Run all benchmarks with a single command:
+
+```bash
+# Using Makefile
+make run-benchmarks
+
+# Or directly with Python
+python run_benchmarks.py
+```
+
+The automated runner will:
+- Start each responder service
+- Start each requester service
+- Execute 1,000 requests
+- Save results to `*_out.txt` files
+- Generate comparison charts automatically
+
+### Option 2: Run Manually
+
+#### REST API Benchmark
+
+```bash
+# Terminal 1: Start REST responder
+cd rest_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start REST requester
+cd rest_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/run-benchmark > rest_out.txt
+```
+
+#### gRPC Benchmark
+
+```bash
+# Terminal 1: Start gRPC responder
+cd grpc_responder
+python main.py
+
+# Terminal 2: Start gRPC requester
+cd grpc_requester
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8000/api/run > grpc_out.txt
+```
+
+#### Socket.IO Benchmark
+
+```bash
+# Terminal 1: Start Socket.IO responder
+cd sio_responder
+uvicorn main:sio_app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start Socket.IO requester
+cd sio_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/send-timestamp > sio_out.txt
+```
+
+#### GraphQL Benchmark
+
+```bash
+# Terminal 1: Start GraphQL responder
+cd graphql_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start GraphQL requester
+cd graphql_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/aggregate-timestamps > graphql_out.txt
+```
+
+#### AVRO Benchmark
+
+```bash
+# Terminal 1: Start AVRO responder
+cd avro_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start AVRO requester
+cd avro_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/run-benchmark > avro_out.txt
+```
+
+#### CBOR Benchmark
+
+```bash
+# Terminal 1: Start CBOR responder
+cd cbor_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start CBOR requester
+cd cbor_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/run-benchmark > cbor_out.txt
+```
+
+### Option 3: Using Docker (Coming Soon)
+
+```bash
+docker-compose up
+```
+
+## 📊 Analyzing Results
+
+After running all benchmarks, compare the results:
+
+```bash
+# Using Makefile
+make compare
+
+# Or directly
+python compare.py
+```
+
+This will generate:
+- Statistical comparison (mean, median, std deviation, min, max)
+- Visual charts showing response time distributions
+- Performance rankings
+- Saved chart: `benchmark_comparison.png`
+
+## 📁 Project Structure
+
+```
+FastAPI-Talks/
+├── rest_requester/          # REST API client implementation
+├── rest_responder/          # REST API server implementation
+├── grpc_requester/          # gRPC client implementation
+├── grpc_responder/          # gRPC server implementation
+├── sio_requester/           # Socket.IO client implementation
+├── sio_responder/           # Socket.IO server implementation
+├── graphql_requester/       # GraphQL client implementation
+├── graphql_responder/       # GraphQL server implementation
+├── avro_requester/          # AVRO client implementation
+├── avro_responder/          # AVRO server implementation
+├── cbor_requester/          # CBOR client implementation
+├── cbor_responder/          # CBOR server implementation
+├── tests/                   # Test suite
+├── compare.py               # Benchmark comparison script
+├── run_benchmarks.py        # Automated benchmark runner
+├── requirements.txt         # Python dependencies
+├── Makefile                 # Automation commands
+├── BENCHMARKS.md            # Detailed methodology
+├── CONTRIBUTING.md          # Contribution guidelines
+└── README.md                # This file
+```
+
+## 🛠️ Development
+
+### Testing
+
+The project includes comprehensive test coverage with pytest:
+
+```bash
+# Run all tests
+make test
+
+# Run tests with coverage report
+make test-cov
+
+# Run specific test file
+pytest tests/test_grpc.py -v
+```
+
+### Code Quality
+
+The project uses multiple linters to ensure code quality:
+
+```bash
+# Run all linters (black, isort, flake8, mypy)
+make lint
+
+# Format code automatically
+make format
+
+# Run type checking
+make type-check
+```
+
+### Pre-commit Hooks
+
+Install pre-commit hooks to automatically check code before commits:
+
+```bash
+# Install pre-commit hooks
+make pre-commit-install
+
+# Run pre-commit manually
+pre-commit run --all-files
+```
+
+### CI/CD
+
+GitHub Actions automatically runs tests and linters on:
+- All pushes to `main`, `develop`, and `claude/*` branches
+- All pull requests
+
+Badge status: ![CI](https://github.com/ice1x/FastAPI-Talks/workflows/CI/badge.svg)
+
+### Development Setup
+
+For development with all tools:
+
+```bash
+# Complete development setup
+make setup-dev
+
+# Run all CI checks locally
+make ci
+```
+
+## 🛠️ Makefile Commands
+
+The project includes a Makefile for convenient operations:
+
+```bash
+make help              # Show all available commands
+make install           # Install Python dependencies
+make install-dev       # Install development dependencies
+make compile-proto     # Compile Protocol Buffer files
+make setup             # Complete setup (install + compile)
+make setup-dev         # Development setup (install-dev + compile + hooks)
+make run-benchmarks    # Run all benchmarks automatically
+make compare           # Compare benchmark results
+make test              # Run tests
+make test-cov          # Run tests with coverage report
+make lint              # Run all linters
+make format            # Format code with black and isort
+make type-check        # Run mypy type checking
+make pre-commit-install # Install pre-commit hooks
+make ci                # Run all CI checks locally
+make clean             # Remove generated files and results
+```
+
+## 🔧 Configuration
+
+Each service can be configured via environment variables. Configuration options are documented in the respective service directories.
+
+## 📈 Benchmark Methodology
+
+Each benchmark:
+1. Sends 1,000 sequential requests
+2. Records request and response timestamps
+3. Calculates response time (latency)
+4. Aggregates results for statistical analysis
+
+For detailed methodology and results interpretation, see [BENCHMARKS.md](BENCHMARKS.md).
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on:
+- How to report issues
+- Code style guidelines
+- Pull request process
+- Adding new protocol benchmarks
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Built with:
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern async web framework
+- [gRPC](https://grpc.io/) - High-performance RPC framework
+- [Socket.IO](https://socket.io/) - Real-time bidirectional communication
+- [Strawberry GraphQL](https://strawberry.rocks/) - Python GraphQL library
+- [Apache Avro](https://avro.apache.org/) - Binary serialization system
+- [CBOR](https://cbor.io/) - Concise binary object representation
+
+## 📧 Contact
+
+- Author: ice1x
+- Repository: [https://github.com/ice1x/FastAPI-Talks](https://github.com/ice1x/FastAPI-Talks)
 

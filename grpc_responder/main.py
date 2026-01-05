@@ -4,9 +4,9 @@ from concurrent import futures
 import grpc
 from grpc_interceptor import ExceptionToStatusInterceptor
 
-from core.config import settings
-from pb.hello_grpc_pb2_grpc import add_GRPCServiceServicer_to_server
-from api.grpc.grpc_endpoint import BaseServicer
+from grpc_responder.api.grpc.grpc_endpoint import BaseServicer
+from grpc_responder.core.config import settings
+from grpc_responder.pb.hello_grpc_pb2_grpc import add_GRPCServiceServicer_to_server
 
 
 class ResponseTimestampService(BaseServicer):
@@ -15,9 +15,7 @@ class ResponseTimestampService(BaseServicer):
 
 def serve():
     interceptors = [ExceptionToStatusInterceptor()]
-    server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors
-    )
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=interceptors)
     add_GRPCServiceServicer_to_server(ResponseTimestampService(), server)
     server.add_insecure_port("[::]:50051")
     server.start()

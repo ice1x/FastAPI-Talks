@@ -2,8 +2,8 @@ from typing import Callable
 
 from fastapi import FastAPI
 
-from api.router import router
-from core.config import settings
+from grpc_requester.api.router import router
+from grpc_requester.core.config import settings
 
 app = FastAPI(
     title=settings.title,
@@ -25,9 +25,9 @@ def customize_openapi(func: Callable[..., dict]) -> Callable[..., dict]:
             for _, param in method_item.items():
                 responses = param.get("responses")
                 # remove default 422 - the default 422 schema is HTTPValidationError
-                if "422" in responses and responses["422"]["content"][
-                    "application/json"
-                ]["schema"]["$ref"].endswith("HTTPValidationError"):
+                if "422" in responses and responses["422"]["content"]["application/json"]["schema"][
+                    "$ref"
+                ].endswith("HTTPValidationError"):
                     del responses["422"]
         return res
 

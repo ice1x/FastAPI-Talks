@@ -1,11 +1,12 @@
-from fastapi import FastAPI
 # from grpc import StatusCode
 # from grpc_interceptor.exceptions import NotFound, GrpcException
 from datetime import UTC, datetime
 
-from pb.hello_grpc_pb2 import Response
-from pb.hello_grpc_pb2_grpc import GRPCServiceServicer
+from fastapi import FastAPI
 from google.protobuf.timestamp_pb2 import Timestamp
+
+from grpc_responder_fastapi.pb.hello_grpc_pb2 import Response
+from grpc_responder_fastapi.pb.hello_grpc_pb2_grpc import GRPCServiceServicer
 
 app = FastAPI()
 

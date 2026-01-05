@@ -4,9 +4,9 @@ import grpc
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from core.config import settings
-from pb.hello_grpc_pb2 import Request
-from pb.hello_grpc_pb2_grpc import GRPCServiceStub
+from grpc_requester.core.config import settings
+from grpc_requester.pb.hello_grpc_pb2 import Request
+from grpc_requester.pb.hello_grpc_pb2_grpc import GRPCServiceStub
 
 
 class gRPBResponderClient(object):

@@ -1,16 +1,20 @@
 import asyncio
-from fastapi import FastAPI
-import uvicorn
-from grpc import aio
 from concurrent import futures
+
+import uvicorn
+from fastapi import FastAPI
+from grpc import aio
+
 # from your_grpc_module import YourServicer, add_YourServicer_to_server  # Import your gRPC definitions
-from pb.hello_grpc_pb2_grpc import add_GRPCServiceServicer_to_server
-from api.grpc.grpc_endpoint import BaseServicer
+from grpc_responder_fastapi.api.grpc.grpc_endpoint import BaseServicer
+from grpc_responder_fastapi.pb.hello_grpc_pb2_grpc import add_GRPCServiceServicer_to_server
 
 app = FastAPI()
 
+
 class ResponseTimestampService(BaseServicer):
     pass
+
 
 # Define FastAPI endpoints
 @app.get("/")
@@ -22,7 +26,7 @@ async def read_root():
 async def serve_grpc():
     server = aio.server()
     add_GRPCServiceServicer_to_server(ResponseTimestampService(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port("[::]:50051")
     await server.start()
     await server.wait_for_termination()
 
