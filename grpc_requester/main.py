@@ -1,8 +1,9 @@
 from typing import Callable
 
-from api.router import router
-from core.config import settings
 from fastapi import FastAPI
+
+from grpc_requester.api.router import router
+from grpc_requester.core.config import settings
 
 app = FastAPI(
     title=settings.title,

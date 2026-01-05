@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from pb.hello_grpc_pb2 import Request
+from grpc_responder.pb.hello_grpc_pb2 import Request
 
 
 def get_utc_now():

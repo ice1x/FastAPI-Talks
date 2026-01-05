@@ -8,8 +8,9 @@ It implements the GetTimestamp RPC method defined in the protobuf schema.
 from datetime import UTC, datetime
 
 from google.protobuf.timestamp_pb2 import Timestamp
-from pb.hello_grpc_pb2 import Response
-from pb.hello_grpc_pb2_grpc import GRPCServiceServicer
+
+from grpc_responder.pb.hello_grpc_pb2 import Response
+from grpc_responder.pb.hello_grpc_pb2_grpc import GRPCServiceServicer
 
 
 class BaseServicer(GRPCServiceServicer):

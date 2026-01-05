@@ -1,6 +1,7 @@
-from business_logic.call_grpc_from_rest import RemoteCallLogic
 from fastapi import APIRouter, Depends
-from schemas.metrics import SchemaRead
+
+from grpc_requester.business_logic.call_grpc_from_rest import RemoteCallLogic
+from grpc_requester.schemas.metrics import SchemaRead
 
 router = APIRouter()
 

@@ -2,10 +2,11 @@ import logging
 from concurrent import futures
 
 import grpc
-from api.grpc.grpc_endpoint import BaseServicer
-from core.config import settings
 from grpc_interceptor import ExceptionToStatusInterceptor
-from pb.hello_grpc_pb2_grpc import add_GRPCServiceServicer_to_server
+
+from grpc_responder.api.grpc.grpc_endpoint import BaseServicer
+from grpc_responder.core.config import settings
+from grpc_responder.pb.hello_grpc_pb2_grpc import add_GRPCServiceServicer_to_server
 
 
 class ResponseTimestampService(BaseServicer):

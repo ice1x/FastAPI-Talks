@@ -5,8 +5,8 @@ This module handles the execution of gRPC timestamp requests
 and assembles the results for benchmark analysis.
 """
 
-from api.dependencies.grpc.call_grpc_responder import gRPBResponderClient
-from schemas.metrics import SchemaRead
+from grpc_requester.api.dependencies.grpc.call_grpc_responder import gRPBResponderClient
+from grpc_requester.schemas.metrics import SchemaRead
 
 
 class RemoteCallLogic:

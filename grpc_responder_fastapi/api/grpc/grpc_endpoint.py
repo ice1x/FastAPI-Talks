@@ -4,8 +4,9 @@ from datetime import UTC, datetime
 
 from fastapi import FastAPI
 from google.protobuf.timestamp_pb2 import Timestamp
-from pb.hello_grpc_pb2 import Response
-from pb.hello_grpc_pb2_grpc import GRPCServiceServicer
+
+from grpc_responder_fastapi.pb.hello_grpc_pb2 import Response
+from grpc_responder_fastapi.pb.hello_grpc_pb2_grpc import GRPCServiceServicer
 
 app = FastAPI()
 
