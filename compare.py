@@ -2,8 +2,8 @@
 Benchmark Comparison Script
 
 This script compares the performance of different communication protocols
-(gRPC, Socket.IO, GraphQL) by analyzing response time data collected
-from benchmark runs.
+and serialization formats (gRPC, Socket.IO, GraphQL, AVRO, CBOR) by
+analyzing response time data collected from benchmark runs.
 """
 
 import json
@@ -93,6 +93,52 @@ def process_graphql_data(graphql_data: list) -> pd.DataFrame:
     })
 
 
+def process_avro_data(avro_data: list) -> pd.DataFrame:
+    """
+    Process AVRO benchmark data into a pandas DataFrame.
+
+    Args:
+        avro_data: List of AVRO benchmark results
+
+    Returns:
+        DataFrame with request_id and response_time columns
+    """
+    response_times = []
+    for item in avro_data:
+        request_ts = pd.to_datetime(item["request_timestamp"])
+        response_ts = pd.to_datetime(item["response_timestamp"])
+        response_time = (response_ts - request_ts).total_seconds()
+        response_times.append(response_time)
+
+    return pd.DataFrame({
+        "request_id": range(len(response_times)),
+        "response_time": response_times
+    })
+
+
+def process_cbor_data(cbor_data: list) -> pd.DataFrame:
+    """
+    Process CBOR benchmark data into a pandas DataFrame.
+
+    Args:
+        cbor_data: List of CBOR benchmark results
+
+    Returns:
+        DataFrame with request_id and response_time columns
+    """
+    response_times = []
+    for item in cbor_data:
+        request_ts = pd.to_datetime(item["request_timestamp"])
+        response_ts = pd.to_datetime(item["response_timestamp"])
+        response_time = (response_ts - request_ts).total_seconds()
+        response_times.append(response_time)
+
+    return pd.DataFrame({
+        "request_id": range(len(response_times)),
+        "response_time": response_times
+    })
+
+
 def print_statistics(datasets: dict):
     """
     Print statistical summary for all datasets.
@@ -133,16 +179,20 @@ def plot_comparison(datasets: dict):
 
     plt.figure(figsize=(14, 8))
 
-    # Define colors for consistency
+    # Define colors and markers for consistency
     colors = {
         "gRPC": "blue",
         "Socket.IO": "green",
-        "GraphQL": "red"
+        "GraphQL": "red",
+        "AVRO": "purple",
+        "CBOR": "orange"
     }
     markers = {
         "gRPC": "o",
         "Socket.IO": "x",
-        "GraphQL": "^"
+        "GraphQL": "^",
+        "AVRO": "s",
+        "CBOR": "D"
     }
 
     # Plot response times for each protocol
@@ -188,6 +238,8 @@ def main():
     grpc_data = read_metrics(Path("grpc_out.txt"))
     socketio_data = read_metrics(Path("sio_out.txt"))
     graphql_data = read_metrics(Path("graphql_out.txt"))
+    avro_data = read_metrics(Path("avro_out.txt"))
+    cbor_data = read_metrics(Path("cbor_out.txt"))
 
     # Process data into DataFrames
     datasets = {}
@@ -203,6 +255,14 @@ def main():
     if graphql_data:
         datasets["GraphQL"] = process_graphql_data(graphql_data)
         print("✓ GraphQL data loaded")
+
+    if avro_data:
+        datasets["AVRO"] = process_avro_data(avro_data)
+        print("✓ AVRO data loaded")
+
+    if cbor_data:
+        datasets["CBOR"] = process_cbor_data(cbor_data)
+        print("✓ CBOR data loaded")
 
     if not datasets:
         print("Error: No benchmark data found. Please run benchmarks first.")

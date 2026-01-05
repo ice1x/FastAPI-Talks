@@ -1,16 +1,21 @@
-# FastAPI Communication Protocols Benchmark
+# FastAPI Communication Protocols & Serialization Benchmark
 
-A comprehensive benchmark comparing different real-time communication protocols using FastAPI: **gRPC**, **Socket.IO**, and **GraphQL**.
+A comprehensive benchmark comparing different communication protocols and serialization formats using FastAPI: **gRPC**, **Socket.IO**, **GraphQL**, **AVRO**, and **CBOR**.
 
 ## 📋 Overview
 
-This project benchmarks the performance of three popular communication protocols by measuring response times for 1,000 sequential timestamp requests. Each protocol implementation consists of a requester service and a responder service.
+This project benchmarks the performance of five popular communication protocols and serialization formats by measuring response times for 1,000 sequential timestamp requests. Each implementation consists of a requester service and a responder service.
 
-### Protocols Tested
+### Protocols & Formats Tested
 
+**Communication Protocols:**
 - **gRPC** - High-performance RPC framework using Protocol Buffers
 - **Socket.IO** - WebSocket-based bidirectional event-driven communication
 - **GraphQL** - Query language for APIs with flexible data fetching
+
+**Serialization Formats:**
+- **AVRO** - Apache Avro binary serialization format
+- **CBOR** - Concise Binary Object Representation (binary JSON)
 
 ## 🎯 Features
 
@@ -134,7 +139,37 @@ uvicorn main:app --host 0.0.0.0 --port 8080
 curl http://127.0.0.1:8080/aggregate-timestamps > graphql_out.txt
 ```
 
-### Option 2: Using Docker (Coming Soon)
+#### AVRO Benchmark
+
+```bash
+# Terminal 1: Start AVRO responder
+cd avro_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start AVRO requester
+cd avro_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/run-benchmark > avro_out.txt
+```
+
+#### CBOR Benchmark
+
+```bash
+# Terminal 1: Start CBOR responder
+cd cbor_responder
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start CBOR requester
+cd cbor_requester
+uvicorn main:app --host 0.0.0.0 --port 8080
+
+# Terminal 3: Execute benchmark
+curl http://127.0.0.1:8080/run-benchmark > cbor_out.txt
+```
+
+### Option 3: Using Docker (Coming Soon)
 
 ```bash
 docker-compose up
@@ -168,6 +203,10 @@ FastAPI-Talks/
 ├── sio_responder/           # Socket.IO server implementation
 ├── graphql_requester/       # GraphQL client implementation
 ├── graphql_responder/       # GraphQL server implementation
+├── avro_requester/          # AVRO client implementation
+├── avro_responder/          # AVRO server implementation
+├── cbor_requester/          # CBOR client implementation
+├── cbor_responder/          # CBOR server implementation
 ├── compare.py               # Benchmark comparison script
 ├── run_benchmarks.py        # Automated benchmark runner
 ├── requirements.txt         # Python dependencies
@@ -221,10 +260,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 Built with:
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern async web framework
 - [gRPC](https://grpc.io/) - High-performance RPC framework
 - [Socket.IO](https://socket.io/) - Real-time bidirectional communication
 - [Strawberry GraphQL](https://strawberry.rocks/) - Python GraphQL library
+- [Apache Avro](https://avro.apache.org/) - Binary serialization system
+- [CBOR](https://cbor.io/) - Concise binary object representation
 
 ## 📧 Contact
 
