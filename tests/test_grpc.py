@@ -2,11 +2,13 @@
 Tests for gRPC services.
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
+from google.protobuf.timestamp_pb2 import Timestamp
+
 from grpc_responder.api.grpc.grpc_endpoint import BaseServicer
 from grpc_responder.pb import hello_grpc_pb2
-from google.protobuf.timestamp_pb2 import Timestamp
 
 
 class TestGrpcServicer:

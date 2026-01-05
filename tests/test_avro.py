@@ -4,6 +4,7 @@ Tests for AVRO serialization services.
 
 import pytest
 from fastapi.testclient import TestClient
+
 from avro_responder.main import app as responder_app
 
 

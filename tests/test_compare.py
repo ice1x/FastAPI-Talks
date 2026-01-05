@@ -2,17 +2,19 @@
 Tests for benchmark comparison script.
 """
 
-import pytest
 import json
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+import pytest
+
 from compare import (
-    process_grpc_data,
-    process_socketio_data,
-    process_graphql_data,
     process_avro_data,
     process_cbor_data,
+    process_graphql_data,
+    process_grpc_data,
     process_rest_data,
+    process_socketio_data,
 )
 
 

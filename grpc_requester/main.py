@@ -1,9 +1,8 @@
 from typing import Callable
 
-from fastapi import FastAPI
-
 from api.router import router
 from core.config import settings
+from fastapi import FastAPI
 
 app = FastAPI(
     title=settings.title,

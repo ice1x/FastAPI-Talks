@@ -4,7 +4,9 @@ Tests for REST API services.
 
 import pytest
 from fastapi.testclient import TestClient
-from rest_responder.main import app as responder_app, TimestampRequest
+
+from rest_responder.main import TimestampRequest
+from rest_responder.main import app as responder_app
 
 
 class TestRESTResponder:

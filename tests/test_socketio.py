@@ -4,6 +4,7 @@ Tests for Socket.IO services.
 
 import pytest
 from fastapi.testclient import TestClient
+
 from sio_responder.main import app as responder_app
 
 

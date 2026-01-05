@@ -2,10 +2,12 @@
 Tests for GraphQL services.
 """
 
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
+
 from graphql_responder.main import app as responder_app
-from datetime import datetime
 
 
 class TestGraphQLResponder:

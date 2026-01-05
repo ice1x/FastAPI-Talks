@@ -1,4 +1,4 @@
-from pydantic import BaseModel, AwareDatetime
+from pydantic import AwareDatetime, BaseModel
 
 
 class SchemaBase(BaseModel):

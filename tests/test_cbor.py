@@ -4,6 +4,7 @@ Tests for CBOR serialization services.
 
 import pytest
 from fastapi.testclient import TestClient
+
 from cbor_responder.main import app as responder_app
 
 

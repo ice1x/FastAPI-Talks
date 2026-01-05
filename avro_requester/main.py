@@ -10,10 +10,10 @@ import asyncio
 import io
 from datetime import datetime
 
+import avro.schema
 import httpx
 from avro.datafile import DataFileWriter
-from avro.io import DatumReader, DatumWriter, BinaryDecoder
-import avro.schema
+from avro.io import BinaryDecoder, DatumReader, DatumWriter
 from fastapi import FastAPI
 
 # Avro schema for timestamp messages
