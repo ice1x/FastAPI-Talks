@@ -1,14 +1,32 @@
+# Web Framework
 fastapi==0.112.1
+uvicorn==0.30.6
+
+# gRPC
 grpcio==1.65.4
 grpcio-tools==1.65.4
 grpclib==0.4.7
+grpc-interceptor==0.15.4
 protobuf==5.27.3
-pydantic==2.8.2
-pydantic-settings==2.4.0
-uvicorn==0.30.6
-pytest==8.3.2
-pytest-grpc==0.8.0
+
+# Socket.IO
+python-socketio==5.11.4
+
+# GraphQL
+strawberry-graphql==0.239.2
+
+# HTTP Client
 aiohttp==3.10.5
+httpx==0.27.2
+
+# Data Processing & Visualization
 pandas==2.2.2
 matplotlib==3.9.2
-strawberry-graphql==0.239.2
+
+# Data Validation
+pydantic==2.8.2
+pydantic-settings==2.4.0
+
+# Testing
+pytest==8.3.2
+pytest-grpc==0.8.0
