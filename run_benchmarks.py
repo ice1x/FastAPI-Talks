@@ -216,24 +216,151 @@ class BenchmarkRunner:
 
         return success
 
+    async def run_rest_benchmark(self) -> bool:
+        """Run REST benchmark."""
+        print("\n" + "=" * 60)
+        print("REST BENCHMARK")
+        print("=" * 60)
+
+        # Start responder
+        responder = self.start_service(
+            "REST Responder",
+            "rest_responder",
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+            8000,
+        )
+        if not responder:
+            return False
+
+        # Start requester
+        requester = self.start_service(
+            "REST Requester",
+            "rest_requester",
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"],
+            8080,
+        )
+        if not requester:
+            return False
+
+        # Execute benchmark
+        success = await self.execute_benchmark(
+            "REST", "http://127.0.0.1:8080/run-benchmark", "rest_out.txt"
+        )
+
+        # Stop services
+        requester.terminate()
+        responder.terminate()
+        time.sleep(2)
+
+        return success
+
+    async def run_avro_benchmark(self) -> bool:
+        """Run AVRO benchmark."""
+        print("\n" + "=" * 60)
+        print("AVRO BENCHMARK")
+        print("=" * 60)
+
+        # Start responder
+        responder = self.start_service(
+            "AVRO Responder",
+            "avro_responder",
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+            8000,
+        )
+        if not responder:
+            return False
+
+        # Start requester
+        requester = self.start_service(
+            "AVRO Requester",
+            "avro_requester",
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"],
+            8080,
+        )
+        if not requester:
+            return False
+
+        # Execute benchmark
+        success = await self.execute_benchmark(
+            "AVRO", "http://127.0.0.1:8080/run-benchmark", "avro_out.txt"
+        )
+
+        # Stop services
+        requester.terminate()
+        responder.terminate()
+        time.sleep(2)
+
+        return success
+
+    async def run_cbor_benchmark(self) -> bool:
+        """Run CBOR benchmark."""
+        print("\n" + "=" * 60)
+        print("CBOR BENCHMARK")
+        print("=" * 60)
+
+        # Start responder
+        responder = self.start_service(
+            "CBOR Responder",
+            "cbor_responder",
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+            8000,
+        )
+        if not responder:
+            return False
+
+        # Start requester
+        requester = self.start_service(
+            "CBOR Requester",
+            "cbor_requester",
+            ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"],
+            8080,
+        )
+        if not requester:
+            return False
+
+        # Execute benchmark
+        success = await self.execute_benchmark(
+            "CBOR", "http://127.0.0.1:8080/run-benchmark", "cbor_out.txt"
+        )
+
+        # Stop services
+        requester.terminate()
+        responder.terminate()
+        time.sleep(2)
+
+        return success
+
     async def run_all_benchmarks(self):
         """Run all benchmarks sequentially."""
         print("\n" + "=" * 60)
         print("FASTAPI COMMUNICATION PROTOCOLS BENCHMARK")
         print("=" * 60)
         print("\nThis will run benchmarks for:")
+        print("  - REST")
         print("  - gRPC")
         print("  - Socket.IO")
         print("  - GraphQL")
+        print("  - AVRO")
+        print("  - CBOR")
         print("\nEach benchmark sends 1,000 requests and measures response time.")
         print("=" * 60)
 
-        results = {"gRPC": False, "Socket.IO": False, "GraphQL": False}
+        results = {
+            "REST": False,
+            "gRPC": False,
+            "Socket.IO": False,
+            "GraphQL": False,
+            "AVRO": False,
+            "CBOR": False,
+        }
 
         try:
+            results["REST"] = await self.run_rest_benchmark()
             results["gRPC"] = await self.run_grpc_benchmark()
             results["Socket.IO"] = await self.run_socketio_benchmark()
             results["GraphQL"] = await self.run_graphql_benchmark()
+            results["AVRO"] = await self.run_avro_benchmark()
+            results["CBOR"] = await self.run_cbor_benchmark()
 
         except KeyboardInterrupt:
             print("\n\nBenchmark interrupted by user")
