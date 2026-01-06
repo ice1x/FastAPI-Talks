@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the benchmarking methodology used to compare the performance of three communication protocols: gRPC, Socket.IO, and GraphQL.
+This document describes the benchmarking methodology used to compare the performance of six communication protocols and serialization formats: **REST**, **gRPC**, **Socket.IO**, **GraphQL**, **AVRO**, and **CBOR**.
 
 ## Test Environment
 
@@ -17,6 +17,8 @@ This document describes the benchmarking methodology used to compare the perform
 - **gRPC**: High-performance RPC framework with Protocol Buffers
 - **Socket.IO**: WebSocket-based bidirectional communication
 - **GraphQL**: Query language with Strawberry implementation
+- **AVRO**: Apache Avro binary serialization format
+- **CBOR**: Concise Binary Object Representation
 
 ## Benchmark Methodology
 
