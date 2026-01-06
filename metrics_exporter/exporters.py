@@ -4,10 +4,11 @@ import csv
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
 
-from .models import BenchmarkResult, BenchmarkComparison
+from .models import BenchmarkComparison, BenchmarkResult
 
 
 class MetricsExporter:

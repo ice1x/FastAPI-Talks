@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from metrics_exporter import MetricsStorage, MetricsExporter
+from metrics_exporter import MetricsExporter, MetricsStorage
 from metrics_exporter.utils import import_legacy_results
 
 

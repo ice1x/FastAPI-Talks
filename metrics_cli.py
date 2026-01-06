@@ -5,7 +5,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from metrics_exporter import MetricsStorage, MetricsExporter
+from metrics_exporter import MetricsExporter, MetricsStorage
 from metrics_exporter.utils import import_legacy_results
 
 
@@ -168,6 +168,7 @@ def main():
         print("Press Ctrl+C to stop")
 
         import uvicorn
+
         from dashboard.main import app
 
         uvicorn.run(app, host=args.host, port=args.port)

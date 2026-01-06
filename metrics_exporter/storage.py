@@ -2,12 +2,12 @@
 
 import json
 import sqlite3
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Dict, Any
-from contextlib import contextmanager
+from typing import Any, Dict, List, Optional
 
-from .models import BenchmarkResult, MetricData, BenchmarkStats
+from .models import BenchmarkResult, BenchmarkStats, MetricData
 
 
 class MetricsStorage:

@@ -2,8 +2,8 @@
 """Generate test benchmark data for demonstration."""
 
 import json
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
 
 # Generate test data for each protocol
 protocols = {

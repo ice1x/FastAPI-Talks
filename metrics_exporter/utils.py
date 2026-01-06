@@ -2,11 +2,12 @@
 
 import json
 from datetime import datetime
-from typing import List, Dict, Any
 from pathlib import Path
+from typing import Any, Dict, List
+
 import numpy as np
 
-from .models import BenchmarkResult, MetricData, BenchmarkStats
+from .models import BenchmarkResult, BenchmarkStats, MetricData
 
 
 def calculate_statistics(latencies: List[float]) -> BenchmarkStats:
