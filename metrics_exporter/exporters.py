@@ -19,50 +19,47 @@ class MetricsExporter:
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_file, 'w', newline='') as f:
+        with open(output_file, "w", newline="") as f:
             writer = csv.writer(f)
 
             # Write header
-            writer.writerow([
-                'request_id',
-                'request_timestamp',
-                'response_timestamp',
-                'latency_seconds'
-            ])
+            writer.writerow(
+                ["request_id", "request_timestamp", "response_timestamp", "latency_seconds"]
+            )
 
             # Write metrics
             for metric in result.metrics:
-                writer.writerow([
-                    metric.request_id,
-                    metric.request_timestamp,
-                    metric.response_timestamp,
-                    metric.latency_seconds
-                ])
+                writer.writerow(
+                    [
+                        metric.request_id,
+                        metric.request_timestamp,
+                        metric.response_timestamp,
+                        metric.latency_seconds,
+                    ]
+                )
 
     @staticmethod
-    def to_excel(
-        results: List[BenchmarkResult],
-        output_path: str,
-        include_stats: bool = True
-    ):
+    def to_excel(results: List[BenchmarkResult], output_path: str, include_stats: bool = True):
         """Export benchmark results to Excel file with multiple sheets."""
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
+        with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
             # Create a sheet for each protocol
             for result in results:
                 # Metrics sheet
                 if result.metrics:
-                    df = pd.DataFrame([
-                        {
-                            'request_id': m.request_id,
-                            'request_timestamp': m.request_timestamp,
-                            'response_timestamp': m.response_timestamp,
-                            'latency_seconds': m.latency_seconds
-                        }
-                        for m in result.metrics
-                    ])
+                    df = pd.DataFrame(
+                        [
+                            {
+                                "request_id": m.request_id,
+                                "request_timestamp": m.request_timestamp,
+                                "response_timestamp": m.response_timestamp,
+                                "latency_seconds": m.latency_seconds,
+                            }
+                            for m in result.metrics
+                        ]
+                    )
 
                     sheet_name = f"{result.protocol}_metrics"[:31]  # Excel limit
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
@@ -72,50 +69,41 @@ class MetricsExporter:
                 summary_data = []
                 for result in results:
                     if result.stats:
-                        summary_data.append({
-                            'protocol': result.protocol,
-                            'run_id': result.run_id,
-                            'timestamp': result.timestamp.isoformat(),
-                            'mean': result.stats.mean,
-                            'median': result.stats.median,
-                            'std_dev': result.stats.std_dev,
-                            'min': result.stats.min,
-                            'max': result.stats.max,
-                            'count': result.stats.count,
-                            'p95': result.stats.p95,
-                            'p99': result.stats.p99
-                        })
+                        summary_data.append(
+                            {
+                                "protocol": result.protocol,
+                                "run_id": result.run_id,
+                                "timestamp": result.timestamp.isoformat(),
+                                "mean": result.stats.mean,
+                                "median": result.stats.median,
+                                "std_dev": result.stats.std_dev,
+                                "min": result.stats.min,
+                                "max": result.stats.max,
+                                "count": result.stats.count,
+                                "p95": result.stats.p95,
+                                "p99": result.stats.p99,
+                            }
+                        )
 
                 if summary_data:
                     summary_df = pd.DataFrame(summary_data)
-                    summary_df.to_excel(writer, sheet_name='Summary', index=False)
+                    summary_df.to_excel(writer, sheet_name="Summary", index=False)
 
     @staticmethod
-    def to_json(
-        result: BenchmarkResult,
-        output_path: str,
-        pretty: bool = True
-    ):
+    def to_json(result: BenchmarkResult, output_path: str, pretty: bool = True):
         """Export benchmark to JSON file."""
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             if pretty:
-                json.dump(
-                    result.dict(),
-                    f,
-                    indent=2,
-                    default=str
-                )
+                json.dump(result.dict(), f, indent=2, default=str)
             else:
                 json.dump(result.dict(), f, default=str)
 
     @staticmethod
     def to_html_report(
-        results: List[BenchmarkResult],
-        output_path: str,
-        title: str = "Benchmark Report"
+        results: List[BenchmarkResult], output_path: str, title: str = "Benchmark Report"
     ):
         """Generate HTML report with statistics and charts."""
         output_file = Path(output_path)
@@ -232,18 +220,18 @@ class MetricsExporter:
             <div class="stat-grid">
 """
                 stats_dict = {
-                    'Mean': f"{result.stats.mean:.6f}s",
-                    'Median': f"{result.stats.median:.6f}s",
-                    'Std Dev': f"{result.stats.std_dev:.6f}s",
-                    'Min': f"{result.stats.min:.6f}s",
-                    'Max': f"{result.stats.max:.6f}s",
-                    'Count': str(result.stats.count)
+                    "Mean": f"{result.stats.mean:.6f}s",
+                    "Median": f"{result.stats.median:.6f}s",
+                    "Std Dev": f"{result.stats.std_dev:.6f}s",
+                    "Min": f"{result.stats.min:.6f}s",
+                    "Max": f"{result.stats.max:.6f}s",
+                    "Count": str(result.stats.count),
                 }
 
                 if result.stats.p95:
-                    stats_dict['P95'] = f"{result.stats.p95:.6f}s"
+                    stats_dict["P95"] = f"{result.stats.p95:.6f}s"
                 if result.stats.p99:
-                    stats_dict['P99'] = f"{result.stats.p99:.6f}s"
+                    stats_dict["P99"] = f"{result.stats.p99:.6f}s"
 
                 for label, value in stats_dict.items():
                     html_content += f"""
@@ -267,46 +255,39 @@ class MetricsExporter:
 </html>
 """
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             f.write(html_content)
 
     @staticmethod
     def export_comparison(
-        comparison: BenchmarkComparison,
-        output_dir: str,
-        formats: Optional[List[str]] = None
+        comparison: BenchmarkComparison, output_dir: str, formats: Optional[List[str]] = None
     ):
         """Export comparison in multiple formats."""
         if formats is None:
-            formats = ['json', 'html', 'excel']
+            formats = ["json", "html", "excel"]
 
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
 
         results = list(comparison.results.values())
 
-        if 'json' in formats:
+        if "json" in formats:
             MetricsExporter.to_json(
-                comparison,
-                output_path / f"comparison_{comparison.run_id}.json"
+                comparison, output_path / f"comparison_{comparison.run_id}.json"
             )
 
-        if 'html' in formats:
+        if "html" in formats:
             MetricsExporter.to_html_report(
                 results,
                 output_path / f"comparison_{comparison.run_id}.html",
-                title=f"Benchmark Comparison - {comparison.run_id}"
+                title=f"Benchmark Comparison - {comparison.run_id}",
             )
 
-        if 'excel' in formats:
-            MetricsExporter.to_excel(
-                results,
-                output_path / f"comparison_{comparison.run_id}.xlsx"
-            )
+        if "excel" in formats:
+            MetricsExporter.to_excel(results, output_path / f"comparison_{comparison.run_id}.xlsx")
 
-        if 'csv' in formats:
+        if "csv" in formats:
             for result in results:
                 MetricsExporter.to_csv(
-                    result,
-                    output_path / f"{result.protocol}_{result.run_id}.csv"
+                    result, output_path / f"{result.protocol}_{result.run_id}.csv"
                 )

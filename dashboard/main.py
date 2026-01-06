@@ -21,11 +21,7 @@ app = FastAPI(title="Benchmark Metrics Dashboard", version="1.0.0")
 
 # Setup templates and static files
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
-app.mount(
-    "/static",
-    StaticFiles(directory=str(Path(__file__).parent / "static")),
-    name="static"
-)
+app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 
 # Initialize storage
 storage = MetricsStorage()
@@ -35,8 +31,7 @@ storage = MetricsStorage()
 async def dashboard(request: Request):
     """Main dashboard page."""
     return templates.TemplateResponse(
-        "dashboard.html",
-        {"request": request, "title": "Benchmark Dashboard"}
+        "dashboard.html", {"request": request, "title": "Benchmark Dashboard"}
     )
 
 
@@ -47,11 +42,7 @@ async def get_stats():
 
 
 @app.get("/api/runs")
-async def get_runs(
-    protocol: Optional[str] = None,
-    limit: int = 100,
-    offset: int = 0
-):
+async def get_runs(protocol: Optional[str] = None, limit: int = 100, offset: int = 0):
     """Get all benchmark runs."""
     runs = storage.get_all_runs(protocol=protocol, limit=limit, offset=offset)
     return {"runs": runs, "total": len(runs)}
@@ -70,10 +61,7 @@ async def get_run(run_id: str):
 async def get_latest():
     """Get latest benchmark for each protocol."""
     results = storage.get_latest_by_protocol()
-    return {
-        protocol: result.dict()
-        for protocol, result in results.items()
-    }
+    return {protocol: result.dict() for protocol, result in results.items()}
 
 
 @app.post("/api/import-legacy")
@@ -90,7 +78,7 @@ async def import_legacy():
         return {
             "success": True,
             "imported": imported_count,
-            "message": f"Successfully imported {imported_count} benchmark results"
+            "message": f"Successfully imported {imported_count} benchmark results",
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -108,7 +96,7 @@ async def delete_run(run_id: str):
 @app.get("/api/export/{run_id}/{format}")
 async def export_run(run_id: str, format: str):
     """Export benchmark run in specified format."""
-    if format not in ['csv', 'json', 'html']:
+    if format not in ["csv", "json", "html"]:
         raise HTTPException(status_code=400, detail="Invalid format")
 
     result = storage.get_benchmark(run_id)
@@ -119,18 +107,14 @@ async def export_run(run_id: str, format: str):
     output_path.parent.mkdir(exist_ok=True)
 
     try:
-        if format == 'csv':
+        if format == "csv":
             MetricsExporter.to_csv(result, str(output_path))
-        elif format == 'json':
+        elif format == "json":
             MetricsExporter.to_json(result, str(output_path))
-        elif format == 'html':
+        elif format == "html":
             MetricsExporter.to_html_report([result], str(output_path))
 
-        return {
-            "success": True,
-            "file": str(output_path),
-            "message": f"Exported to {output_path}"
-        }
+        return {"success": True, "file": str(output_path), "message": f"Exported to {output_path}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -142,10 +126,10 @@ async def compare_protocols():
 
     comparison = {
         protocol: {
-            'run_id': result.run_id,
-            'timestamp': result.timestamp.isoformat(),
-            'stats': result.stats.dict() if result.stats else None,
-            'sample_count': len(result.metrics)
+            "run_id": result.run_id,
+            "timestamp": result.timestamp.isoformat(),
+            "stats": result.stats.dict() if result.stats else None,
+            "sample_count": len(result.metrics),
         }
         for protocol, result in results.items()
     }
@@ -155,4 +139,5 @@ async def compare_protocols():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8888)

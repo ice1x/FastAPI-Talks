@@ -66,5 +66,5 @@ def update_benchmarks():
     print("  python metrics_cli.py export-all  # Export all latest results")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     update_benchmarks()
