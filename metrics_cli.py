@@ -9,7 +9,7 @@ from metrics_exporter import MetricsExporter, MetricsStorage
 from metrics_exporter.utils import import_legacy_results
 
 
-def main():
+def main():  # noqa: C901
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(description="Benchmark Metrics Management Tool")
 
@@ -149,7 +149,7 @@ def main():
         print("\n=== Benchmark Database Statistics ===")
         print(f"Total Runs: {stats['total_runs']}")
         print(f"Total Metrics: {stats['total_metrics']:,}")
-        print(f"\nRuns by Protocol:")
+        print("\nRuns by Protocol:")
 
         for protocol, count in stats["protocols"].items():
             print(f"  {protocol}: {count}")

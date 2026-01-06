@@ -13,9 +13,9 @@ from fastapi.templating import Jinja2Templates
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from metrics_exporter import MetricsExporter, MetricsStorage
-from metrics_exporter.models import BenchmarkResult
-from metrics_exporter.utils import import_legacy_results
+from metrics_exporter import MetricsExporter, MetricsStorage  # noqa: E402
+from metrics_exporter.models import BenchmarkResult  # noqa: E402
+from metrics_exporter.utils import import_legacy_results  # noqa: E402
 
 app = FastAPI(title="Benchmark Metrics Dashboard", version="1.0.0")
 
