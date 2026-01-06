@@ -31,16 +31,20 @@ Based on 1,000 sequential requests on localhost (Python 3.11, FastAPI):
 
 | Protocol | Avg Latency | Min | Max | Best For |
 |----------|-------------|-----|-----|----------|
-| **gRPC** | ~0.8ms | ~0.4ms | ~2.1ms | Microservices, low-latency RPC |
-| **REST** | ~1.2ms | ~0.6ms | ~2.8ms | Public APIs, simplicity, broad compatibility |
-| **CBOR** | ~1.0ms | ~0.5ms | ~2.4ms | Binary efficiency, IoT, constrained devices |
-| **AVRO** | ~1.1ms | ~0.5ms | ~2.5ms | Schema evolution, data pipelines |
-| **Socket.IO** | ~2.5ms | ~1.2ms | ~5.0ms | Real-time apps, bidirectional events |
-| **GraphQL** | ~3.0ms | ~1.5ms | ~6.2ms | Flexible queries, multiple client types |
+| **REST** | 2.36ms | 1.74ms | 18.15ms | Public APIs, simplicity, broad compatibility |
+| **AVRO** | 2.66ms | 1.93ms | 38.98ms | Schema evolution, data pipelines |
+| **CBOR** | 2.85ms | 1.82ms | 27.18ms | Binary efficiency, IoT, constrained devices |
+| **Socket.IO** | 99.76ms | 1.30ms | 199.20ms | Real-time apps, bidirectional events |
+| **GraphQL** | 346.41ms | 97.22ms | 682.09ms | Flexible queries, multiple client types |
+| **gRPC** | ⚠️ *See note* | - | - | Microservices, low-latency RPC |
 
-> 💡 **Note**: These are ballpark figures. Run your own benchmarks to get precise numbers for your environment.
+> 💡 **Note**: gRPC benchmark could not complete in this test environment. Typically gRPC is faster than REST due to HTTP/2 and Protocol Buffers.
 >
-> 📊 See full interactive results in the [Dashboard](#-interactive-dashboard) after running benchmarks
+> ⚠️ **Important**: These results are from localhost testing with small payloads (timestamps). Socket.IO and GraphQL show high latency here, but offer unique advantages:
+> - **Socket.IO**: Bidirectional real-time communication (no polling overhead)
+> - **GraphQL**: One request vs multiple REST calls (reduces network round trips)
+>
+> 📊 See detailed analysis in [REAL_BENCHMARK_RESULTS.md](REAL_BENCHMARK_RESULTS.md) • Run your own: `make run-benchmarks`
 
 ---
 
