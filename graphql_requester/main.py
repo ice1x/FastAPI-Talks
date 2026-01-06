@@ -2,98 +2,83 @@
 GraphQL Requester Service
 
 This service acts as a benchmark client for the GraphQL responder.
-It sends 1,000 GraphQL queries in batches and collects response timestamps
+It sends 1,000 GraphQL queries and collects response timestamps
 for performance analysis.
 """
 
-import asyncio
-from datetime import datetime
+import sys
+from pathlib import Path
+
+# Add parent directory to path for common imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import httpx
-from fastapi import FastAPI
 
-# Initialize the FastAPI app
-app = FastAPI(
-    title="GraphQL Requester Service",
-    description="Benchmark client for GraphQL timestamp queries",
-    version="1.0.0",
-)
-
-# GraphQL query template for fetching timestamps
-GRAPHQL_QUERY = """
-query getTimestamps($requestTimestamp: DateTime!) {
-  getTimestamps(requestTimestamp: $requestTimestamp) {
-    requestTimestamp
-    responseTimestamp
-  }
-}
-"""
-
-# GraphQL endpoint URL (configurable via environment variable)
-GRAPHQL_ENDPOINT = "http://localhost:8000/graphql"
+from common import BaseBenchmarkRequester, BenchmarkConfig
 
 
-async def fetch_timestamps(session: httpx.AsyncClient, request_timestamp: datetime) -> dict:
-    """
-    Send a single GraphQL query request and return the response.
+class GraphqlRequester(BaseBenchmarkRequester):
+    """GraphQL benchmark requester using GraphQL queries."""
 
-    Args:
-        session: HTTP client session for connection pooling
-        request_timestamp: The timestamp to send in the query
-
-    Returns:
-        Dictionary containing request and response timestamps
-    """
-    payload = {
-        "query": GRAPHQL_QUERY,
-        "variables": {"requestTimestamp": request_timestamp.isoformat()},
+    # GraphQL query template
+    GRAPHQL_QUERY = """
+    query getTimestamps($requestTimestamp: DateTime!) {
+      getTimestamps(requestTimestamp: $requestTimestamp) {
+        requestTimestamp
+        responseTimestamp
+      }
     }
-
-    response = await session.post(GRAPHQL_ENDPOINT, json=payload, timeout=10.0)
-
-    data = response.json()
-    return data["data"]["getTimestamps"]
-
-
-@app.get("/aggregate-timestamps")
-async def aggregate_timestamps():
     """
-    Execute 1,000 GraphQL queries in batches and aggregate results.
 
-    This endpoint sends GraphQL timestamp queries in batches of 50
-    to avoid overwhelming the connection pool. Results are collected
-    and returned for benchmark analysis.
+    def __init__(self):
+        """Initialize GraphQL requester with configuration."""
+        config = BenchmarkConfig(
+            protocol_name="GraphQL",
+            responder_port=8000,
+            requester_port=8080,
+        )
+        super().__init__(config)
 
-    Returns:
-        List of timestamp pairs (request/response) from all queries
-    """
-    num_requests = 1000
-    batch_size = 50
-    timestamps_list = []
+    async def _send_request(
+        self, client: httpx.AsyncClient, request_timestamp: str
+    ) -> dict:
+        """
+        Send a single GraphQL query request.
 
-    # Configure connection pooling for optimal performance
-    limits = httpx.Limits(max_connections=100, max_keepalive_connections=20)
+        Args:
+            client: HTTP client for connection pooling
+            request_timestamp: Request timestamp to send
 
-    async with httpx.AsyncClient(limits=limits) as client:
-        # Process requests in batches
-        for i in range(0, num_requests, batch_size):
-            request_timestamp = datetime.utcnow()
+        Returns:
+            Dictionary with request and response timestamps
+        """
+        url = f"{self.config.responder_url}/graphql"
 
-            # Create batch of concurrent requests
-            tasks = [fetch_timestamps(client, request_timestamp) for _ in range(batch_size)]
+        payload = {
+            "query": self.GRAPHQL_QUERY,
+            "variables": {"requestTimestamp": request_timestamp},
+        }
 
-            # Execute batch concurrently
-            results = await asyncio.gather(*tasks)
-            timestamps_list.extend(results)
+        response = await client.post(
+            url,
+            json=payload,
+            timeout=self.config.timeout,
+        )
+        response.raise_for_status()
 
-    return timestamps_list
+        data = response.json()
+        return data["data"]["getTimestamps"]
+
+    def _get_health_response(self) -> dict:
+        """Customize health check response for GraphQL."""
+        return {
+            "service": "GraphQL Requester",
+            "status": "running",
+            "format": "GraphQL with Strawberry",
+            "endpoint": "/run-benchmark",
+        }
 
 
-@app.get("/")
-async def root():
-    """Health check endpoint."""
-    return {
-        "service": "GraphQL Requester",
-        "status": "running",
-        "endpoint": "/aggregate-timestamps",
-    }
+# Create requester instance and expose app
+requester = GraphqlRequester()
+app = requester.app
