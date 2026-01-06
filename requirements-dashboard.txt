@@ -1,0 +1,21 @@
+# Minimal requirements for Dashboard only
+# Use this if you have issues building grpcio on your platform
+
+# Web Framework
+fastapi==0.112.1
+uvicorn==0.30.6
+
+# Data Processing & Visualization
+pandas==2.2.2
+matplotlib==3.9.2
+numpy==1.26.4
+openpyxl==3.1.5
+
+# Web Dashboard
+jinja2==3.1.4
+
+# Data Validation
+pydantic==2.8.2
+
+# HTTP Client (for dashboard API)
+httpx==0.27.2
