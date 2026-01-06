@@ -32,12 +32,6 @@ pip install -r requirements.txt
 Import legacy benchmark results from `*_out.txt` files:
 
 ```bash
-python update_benchmarks.py
-```
-
-Or manually:
-
-```bash
 python metrics_cli.py import
 ```
 
