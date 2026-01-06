@@ -9,6 +9,7 @@ and collects the results.
 
 import asyncio
 import json
+import os
 import subprocess
 import sys
 import time
@@ -25,6 +26,8 @@ class BenchmarkRunner:
 
     def __init__(self):
         self.processes = []
+        # Get the project root directory
+        self.project_root = str(Path(__file__).parent.absolute())
 
     def start_service(
         self, name: str, directory: str, command: list, port: int, wait_time: int = 3
@@ -43,8 +46,16 @@ class BenchmarkRunner:
             The subprocess.Popen object
         """
         print(f"Starting {name}...")
+
+        # Set up environment with PYTHONPATH
+        env = os.environ.copy()
+        if "PYTHONPATH" in env:
+            env["PYTHONPATH"] = f"{self.project_root}:{env['PYTHONPATH']}"
+        else:
+            env["PYTHONPATH"] = self.project_root
+
         process = subprocess.Popen(
-            command, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            command, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
         )
         self.processes.append(process)
         time.sleep(wait_time)
