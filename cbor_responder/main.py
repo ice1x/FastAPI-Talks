@@ -6,49 +6,48 @@ It decodes incoming CBOR messages, adds a response timestamp,
 and returns the result in CBOR format.
 """
 
-from datetime import datetime
+import sys
+from pathlib import Path
+
+# Add parent directory to path for common imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import cbor2
-from fastapi import FastAPI, Request, Response
 
-app = FastAPI(
-    title="CBOR Responder Service",
-    description="Benchmark responder for CBOR serialization",
-    version="1.0.0",
-)
+from common import BaseBenchmarkResponder, BenchmarkConfig
 
 
-@app.post("/timestamp")
-async def handle_timestamp(request: Request):
-    """
-    Handle CBOR-encoded timestamp requests.
+class CborResponder(BaseBenchmarkResponder):
+    """CBOR benchmark responder using binary encoding."""
 
-    Decodes the incoming CBOR request, adds a response timestamp,
-    and returns a CBOR-encoded response.
+    def __init__(self):
+        """Initialize CBOR responder with CBOR serializer/deserializer."""
+        config = BenchmarkConfig(protocol_name="CBOR", responder_port=8000)
 
-    Args:
-        request: FastAPI request containing CBOR-encoded data
+        # CBOR serializer/deserializer
+        def serialize(data: dict) -> bytes:
+            return cbor2.dumps(data)
 
-    Returns:
-        Response with CBOR-encoded timestamp data
-    """
-    # Read and decode request body
-    body = await request.body()
-    data = cbor2.loads(body)
+        def deserialize(data: bytes) -> dict:
+            return cbor2.loads(data)
 
-    # Add response timestamp
-    data["response_timestamp"] = datetime.now().isoformat()
+        super().__init__(
+            config=config,
+            serializer=serialize,
+            deserializer=deserialize,
+            content_type="application/cbor",
+        )
 
-    # Encode and return response
-    return Response(content=cbor2.dumps(data), media_type="application/cbor")
+    def _get_health_response(self) -> dict:
+        """Customize health check response for CBOR."""
+        return {
+            "service": "CBOR Responder",
+            "status": "running",
+            "format": "CBOR (Concise Binary Object Representation)",
+            "message": "Ready to process CBOR requests",
+        }
 
 
-@app.get("/")
-async def root():
-    """Health check endpoint."""
-    return {
-        "service": "CBOR Responder",
-        "status": "running",
-        "format": "CBOR (Concise Binary Object Representation)",
-        "message": "Ready to process CBOR requests",
-    }
+# Create responder instance and expose app
+responder = CborResponder()
+app = responder.app

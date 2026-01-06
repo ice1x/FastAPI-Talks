@@ -6,10 +6,18 @@ It receives a timestamp in JSON format and returns it along with the server's
 current timestamp.
 """
 
+import json
+import sys
 from datetime import datetime
+from pathlib import Path
 
-from fastapi import FastAPI
+# Add parent directory to path for common imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from fastapi import Request, Response
 from pydantic import BaseModel
+
+from common import BaseBenchmarkResponder, BenchmarkConfig
 
 
 class TimestampRequest(BaseModel):
@@ -25,38 +33,37 @@ class TimestampResponse(BaseModel):
     response_timestamp: str
 
 
-app = FastAPI(
-    title="REST API Responder Service",
-    description="Benchmark responder for REST API with JSON",
-    version="1.0.0",
-)
+class RestResponder(BaseBenchmarkResponder):
+    """REST API benchmark responder using JSON serialization."""
+
+    def __init__(self):
+        """Initialize REST responder with JSON serializer/deserializer."""
+        config = BenchmarkConfig(protocol_name="REST", responder_port=8000)
+
+        # JSON serializer/deserializer
+        def serialize(data: dict) -> bytes:
+            return json.dumps(data).encode()
+
+        def deserialize(data: bytes) -> dict:
+            return json.loads(data)
+
+        super().__init__(
+            config=config,
+            serializer=serialize,
+            deserializer=deserialize,
+            content_type="application/json",
+        )
+
+    def _get_health_response(self) -> dict:
+        """Customize health check response for REST."""
+        return {
+            "service": "REST API Responder",
+            "status": "running",
+            "format": "JSON over HTTP",
+            "message": "Ready to process REST requests",
+        }
 
 
-@app.post("/timestamp", response_model=TimestampResponse)
-async def handle_timestamp(request: TimestampRequest) -> TimestampResponse:
-    """
-    Handle REST API timestamp requests.
-
-    Receives a JSON request with a timestamp and returns it along with
-    the current server timestamp.
-
-    Args:
-        request: TimestampRequest containing the request timestamp
-
-    Returns:
-        TimestampResponse with both request and response timestamps
-    """
-    return TimestampResponse(
-        request_timestamp=request.request_timestamp, response_timestamp=datetime.now().isoformat()
-    )
-
-
-@app.get("/")
-async def root():
-    """Health check endpoint."""
-    return {
-        "service": "REST API Responder",
-        "status": "running",
-        "format": "JSON over HTTP",
-        "message": "Ready to process REST requests",
-    }
+# Create responder instance and expose app
+responder = RestResponder()
+app = responder.app
