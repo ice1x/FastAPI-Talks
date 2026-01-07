@@ -28,9 +28,7 @@ class RestRequester(BaseBenchmarkRequester):
         )
         super().__init__(config)
 
-    async def _send_request(
-        self, client: httpx.AsyncClient, request_timestamp: str
-    ) -> dict:
+    async def _send_request(self, client: httpx.AsyncClient, request_timestamp: str) -> dict:
         """
         Send a single REST API request with JSON payload.
 
@@ -44,9 +42,7 @@ class RestRequester(BaseBenchmarkRequester):
         url = f"{self.config.responder_url}/timestamp"
         payload = {"request_timestamp": request_timestamp}
 
-        response = await client.post(
-            url, json=payload, timeout=self.config.timeout
-        )
+        response = await client.post(url, json=payload, timeout=self.config.timeout)
         response.raise_for_status()
 
         return response.json()

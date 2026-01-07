@@ -39,9 +39,7 @@ class GraphqlRequester(BaseBenchmarkRequester):
         )
         super().__init__(config)
 
-    async def _send_request(
-        self, client: httpx.AsyncClient, request_timestamp: str
-    ) -> dict:
+    async def _send_request(self, client: httpx.AsyncClient, request_timestamp: str) -> dict:
         """
         Send a single GraphQL query request.
 

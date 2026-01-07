@@ -30,9 +30,7 @@ class CborRequester(BaseBenchmarkRequester):
         )
         super().__init__(config)
 
-    async def _send_request(
-        self, client: httpx.AsyncClient, request_timestamp: str
-    ) -> dict:
+    async def _send_request(self, client: httpx.AsyncClient, request_timestamp: str) -> dict:
         """
         Send a single CBOR-encoded request.
 
@@ -46,9 +44,7 @@ class CborRequester(BaseBenchmarkRequester):
         url = f"{self.config.responder_url}/timestamp"
 
         # Encode request with CBOR
-        payload = cbor2.dumps(
-            {"request_timestamp": request_timestamp, "response_timestamp": ""}
-        )
+        payload = cbor2.dumps({"request_timestamp": request_timestamp, "response_timestamp": ""})
 
         # Send request
         response = await client.post(

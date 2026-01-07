@@ -35,9 +35,7 @@ class AvroRequester(BaseBenchmarkRequester):
         # Parse AVRO schema
         self.schema = avro.schema.parse(TIMESTAMP_SCHEMA_AVRO)
 
-    async def _send_request(
-        self, client: httpx.AsyncClient, request_timestamp: str
-    ) -> dict:
+    async def _send_request(self, client: httpx.AsyncClient, request_timestamp: str) -> dict:
         """
         Send a single Avro-serialized request.
 

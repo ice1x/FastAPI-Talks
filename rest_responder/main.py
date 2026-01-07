@@ -54,6 +54,16 @@ class RestResponder(BaseBenchmarkResponder):
             content_type="application/json",
         )
 
+        # Override timestamp endpoint with Pydantic validation
+        @self.app.post("/timestamp", response_model=TimestampResponse)
+        async def timestamp(request: TimestampRequest) -> TimestampResponse:
+            """Handle timestamp request with Pydantic validation."""
+            response_timestamp = datetime.now().isoformat()
+            return TimestampResponse(
+                request_timestamp=request.request_timestamp,
+                response_timestamp=response_timestamp,
+            )
+
     def _get_health_response(self) -> dict:
         """Customize health check response for REST."""
         return {
