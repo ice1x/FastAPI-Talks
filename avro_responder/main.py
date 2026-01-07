@@ -7,25 +7,21 @@ and returns the result in Avro format.
 """
 
 import io
+import sys
 from datetime import datetime
+from pathlib import Path
+
+# Add parent directory to path for common imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import avro.io
 import avro.schema
 from fastapi import FastAPI, Request, Response
 
+from common import TIMESTAMP_SCHEMA_AVRO
+
 # Avro schema for timestamp messages
-TIMESTAMP_SCHEMA = avro.schema.parse(
-    """
-{
-    "type": "record",
-    "name": "Timestamp",
-    "fields": [
-        {"name": "request_timestamp", "type": "string"},
-        {"name": "response_timestamp", "type": "string"}
-    ]
-}
-"""
-)
+TIMESTAMP_SCHEMA = avro.schema.parse(TIMESTAMP_SCHEMA_AVRO)
 
 app = FastAPI(
     title="AVRO Responder Service",
