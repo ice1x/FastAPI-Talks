@@ -14,11 +14,11 @@ from pathlib import Path
 # Add parent directory to path for common imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import avro.io
-import avro.schema
-from fastapi import FastAPI, Request, Response
+import avro.io  # noqa: E402
+import avro.schema  # noqa: E402
+from fastapi import FastAPI, Request, Response  # noqa: E402
 
-from common import TIMESTAMP_SCHEMA_AVRO
+from common import TIMESTAMP_SCHEMA_AVRO  # noqa: E402
 
 # Avro schema for timestamp messages
 TIMESTAMP_SCHEMA = avro.schema.parse(TIMESTAMP_SCHEMA_AVRO)
