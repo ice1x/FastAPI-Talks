@@ -6,84 +6,111 @@ It sends 1,000 HTTP requests with Avro-serialized payloads and measures
 response times for performance analysis.
 """
 
+import asyncio
 import io
-import sys
-from pathlib import Path
+from datetime import datetime
 
-# Add parent directory to path for common imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-import avro.io
 import avro.schema
 import httpx
+from avro.datafile import DataFileWriter
+from avro.io import BinaryDecoder, DatumReader, DatumWriter
+from fastapi import FastAPI
 
-from common import BaseBenchmarkRequester, BenchmarkConfig, TIMESTAMP_SCHEMA_AVRO
+# Avro schema for timestamp messages
+TIMESTAMP_SCHEMA = avro.schema.parse(
+    """
+{
+    "type": "record",
+    "name": "Timestamp",
+    "fields": [
+        {"name": "request_timestamp", "type": "string"},
+        {"name": "response_timestamp", "type": "string"}
+    ]
+}
+"""
+)
 
-
-class AvroRequester(BaseBenchmarkRequester):
-    """AVRO benchmark requester using binary serialization."""
-
-    def __init__(self):
-        """Initialize AVRO requester with schema."""
-        config = BenchmarkConfig(
-            protocol_name="AVRO",
-            responder_port=8000,
-            requester_port=8080,
-        )
-        super().__init__(config)
-
-        # Parse AVRO schema
-        self.schema = avro.schema.parse(TIMESTAMP_SCHEMA_AVRO)
-
-    async def _send_request(self, client: httpx.AsyncClient, request_timestamp: str) -> dict:
-        """
-        Send a single Avro-serialized request.
-
-        Args:
-            client: HTTP client for connection pooling
-            request_timestamp: Request timestamp to send
-
-        Returns:
-            Dictionary with request and response timestamps
-        """
-        url = f"{self.config.responder_url}/timestamp"
-
-        # Serialize request with Avro
-        writer = avro.io.DatumWriter(self.schema)
-        bytes_writer = io.BytesIO()
-        encoder = avro.io.BinaryEncoder(bytes_writer)
-        writer.write(
-            {"request_timestamp": request_timestamp, "response_timestamp": ""},
-            encoder,
-        )
-
-        # Send request
-        response = await client.post(
-            url,
-            content=bytes_writer.getvalue(),
-            headers={"Content-Type": "application/avro"},
-            timeout=self.config.timeout,
-        )
-        response.raise_for_status()
-
-        # Deserialize response
-        reader = avro.io.DatumReader(self.schema)
-        bytes_reader = io.BytesIO(response.content)
-        decoder = avro.io.BinaryDecoder(bytes_reader)
-        result = reader.read(decoder)
-
-        return result
-
-    def _get_health_response(self) -> dict:
-        """Customize health check response for AVRO."""
-        return {
-            "service": "AVRO Requester",
-            "status": "running",
-            "format": "Apache Avro Binary",
-            "endpoint": "/run-benchmark",
-        }
+# Configuration
+AVRO_RESPONDER_URL = "http://localhost:8000/timestamp"
+REQUEST_COUNT = 1000
+TIMEOUT = 30
 
 
-# Create requester instance and expose app
-requester = AvroRequester()
-app = requester.app
+app = FastAPI(
+    title="AVRO Requester Service",
+    description="Benchmark client for Avro serialization",
+    version="1.0.0",
+)
+
+
+async def send_avro_request(client: httpx.AsyncClient, request_ts: str) -> dict:
+    """
+    Send a single Avro-serialized request.
+
+    Args:
+        client: HTTP client for connection pooling
+        request_ts: Request timestamp to send
+
+    Returns:
+        Dictionary with request and response timestamps
+    """
+    # Serialize request with Avro
+    writer = avro.io.DatumWriter(TIMESTAMP_SCHEMA)
+    bytes_writer = io.BytesIO()
+    encoder = avro.io.BinaryEncoder(bytes_writer)
+    writer.write({"request_timestamp": request_ts, "response_timestamp": ""}, encoder)
+
+    # Send request
+    response = await client.post(
+        AVRO_RESPONDER_URL,
+        content=bytes_writer.getvalue(),
+        headers={"Content-Type": "application/avro"},
+        timeout=TIMEOUT,
+    )
+
+    # Deserialize response
+    reader = avro.io.DatumReader(TIMESTAMP_SCHEMA)
+    bytes_reader = io.BytesIO(response.content)
+    decoder = avro.io.BinaryDecoder(bytes_reader)
+    result = reader.read(decoder)
+
+    return result
+
+
+@app.get("/run-benchmark")
+async def run_benchmark():
+    """
+    Execute Avro serialization benchmark.
+
+    Sends 1,000 requests with Avro-serialized timestamps and collects
+    response times for performance analysis.
+
+    Returns:
+        List of timestamp pairs (request/response)
+    """
+    results = []
+
+    async with httpx.AsyncClient() as client:
+        for i in range(REQUEST_COUNT):
+            request_ts = datetime.now().isoformat()
+            result = await send_avro_request(client, request_ts)
+            results.append(
+                {
+                    "request_id": i,
+                    "request_timestamp": result["request_timestamp"],
+                    "response_timestamp": result["response_timestamp"],
+                }
+            )
+
+    return results
+
+
+@app.get("/")
+async def root():
+    """Health check endpoint."""
+    return {
+        "service": "AVRO Requester",
+        "status": "running",
+        "format": "Apache Avro Binary",
+        "endpoint": "/run-benchmark",
+    }

@@ -6,57 +6,76 @@ It sends 1,000 HTTP requests with JSON payloads and measures response times
 for performance analysis.
 """
 
-import sys
-from pathlib import Path
-
-# Add parent directory to path for common imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+from datetime import datetime
 
 import httpx
-from common import BaseBenchmarkRequester, BenchmarkConfig
+from fastapi import FastAPI
+
+# Configuration
+REST_RESPONDER_URL = "http://localhost:8000/timestamp"
+REQUEST_COUNT = 1000
+TIMEOUT = 30
 
 
-class RestRequester(BaseBenchmarkRequester):
-    """REST API benchmark requester using JSON serialization."""
-
-    def __init__(self):
-        """Initialize REST requester with configuration."""
-        config = BenchmarkConfig(
-            protocol_name="REST",
-            responder_port=8000,
-            requester_port=8080,
-        )
-        super().__init__(config)
-
-    async def _send_request(self, client: httpx.AsyncClient, request_timestamp: str) -> dict:
-        """
-        Send a single REST API request with JSON payload.
-
-        Args:
-            client: HTTP client for connection pooling
-            request_timestamp: Request timestamp to send
-
-        Returns:
-            Dictionary with request and response timestamps
-        """
-        url = f"{self.config.responder_url}/timestamp"
-        payload = {"request_timestamp": request_timestamp}
-
-        response = await client.post(url, json=payload, timeout=self.config.timeout)
-        response.raise_for_status()
-
-        return response.json()
-
-    def _get_health_response(self) -> dict:
-        """Customize health check response for REST."""
-        return {
-            "service": "REST API Requester",
-            "status": "running",
-            "format": "JSON over HTTP",
-            "endpoint": "/run-benchmark",
-        }
+app = FastAPI(
+    title="REST API Requester Service",
+    description="Benchmark client for REST API with JSON",
+    version="1.0.0",
+)
 
 
-# Create requester instance and expose app
-requester = RestRequester()
-app = requester.app
+async def send_rest_request(client: httpx.AsyncClient, request_ts: str) -> dict:
+    """
+    Send a single REST API request with JSON payload.
+
+    Args:
+        client: HTTP client for connection pooling
+        request_ts: Request timestamp to send
+
+    Returns:
+        Dictionary with request and response timestamps
+    """
+    payload = {"request_timestamp": request_ts}
+
+    response = await client.post(REST_RESPONDER_URL, json=payload, timeout=TIMEOUT)
+
+    return response.json()
+
+
+@app.get("/run-benchmark")
+async def run_benchmark():
+    """
+    Execute REST API benchmark.
+
+    Sends 1,000 requests with JSON-encoded timestamps and collects
+    response times for performance analysis.
+
+    Returns:
+        List of timestamp pairs (request/response)
+    """
+    results = []
+
+    async with httpx.AsyncClient() as client:
+        for i in range(REQUEST_COUNT):
+            request_ts = datetime.now().isoformat()
+            result = await send_rest_request(client, request_ts)
+            results.append(
+                {
+                    "request_id": i,
+                    "request_timestamp": result["request_timestamp"],
+                    "response_timestamp": result["response_timestamp"],
+                }
+            )
+
+    return results
+
+
+@app.get("/")
+async def root():
+    """Health check endpoint."""
+    return {
+        "service": "REST API Requester",
+        "status": "running",
+        "format": "JSON over HTTP",
+        "endpoint": "/run-benchmark",
+    }

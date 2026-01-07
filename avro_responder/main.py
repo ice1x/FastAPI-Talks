@@ -7,59 +7,74 @@ and returns the result in Avro format.
 """
 
 import io
-import sys
-from pathlib import Path
-
-# Add parent directory to path for common imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+from datetime import datetime
 
 import avro.io
 import avro.schema
+from fastapi import FastAPI, Request, Response
 
-from common import BaseBenchmarkResponder, BenchmarkConfig, TIMESTAMP_SCHEMA_AVRO
+# Avro schema for timestamp messages
+TIMESTAMP_SCHEMA = avro.schema.parse(
+    """
+{
+    "type": "record",
+    "name": "Timestamp",
+    "fields": [
+        {"name": "request_timestamp", "type": "string"},
+        {"name": "response_timestamp", "type": "string"}
+    ]
+}
+"""
+)
 
-
-class AvroResponder(BaseBenchmarkResponder):
-    """AVRO benchmark responder using binary serialization."""
-
-    def __init__(self):
-        """Initialize AVRO responder with Avro serializer/deserializer."""
-        config = BenchmarkConfig(protocol_name="AVRO", responder_port=8000)
-
-        # Parse AVRO schema
-        self.schema = avro.schema.parse(TIMESTAMP_SCHEMA_AVRO)
-
-        # AVRO serializer/deserializer
-        def serialize(data: dict) -> bytes:
-            writer = avro.io.DatumWriter(self.schema)
-            bytes_writer = io.BytesIO()
-            encoder = avro.io.BinaryEncoder(bytes_writer)
-            writer.write(data, encoder)
-            return bytes_writer.getvalue()
-
-        def deserialize(data: bytes) -> dict:
-            reader = avro.io.DatumReader(self.schema)
-            bytes_reader = io.BytesIO(data)
-            decoder = avro.io.BinaryDecoder(bytes_reader)
-            return reader.read(decoder)
-
-        super().__init__(
-            config=config,
-            serializer=serialize,
-            deserializer=deserialize,
-            content_type="application/avro",
-        )
-
-    def _get_health_response(self) -> dict:
-        """Customize health check response for AVRO."""
-        return {
-            "service": "AVRO Responder",
-            "status": "running",
-            "format": "Apache Avro Binary",
-            "message": "Ready to process Avro requests",
-        }
+app = FastAPI(
+    title="AVRO Responder Service",
+    description="Benchmark responder for Avro serialization",
+    version="1.0.0",
+)
 
 
-# Create responder instance and expose app
-responder = AvroResponder()
-app = responder.app
+@app.post("/timestamp")
+async def handle_timestamp(request: Request):
+    """
+    Handle Avro-serialized timestamp requests.
+
+    Deserializes the incoming Avro request, adds a response timestamp,
+    and returns an Avro-serialized response.
+
+    Args:
+        request: FastAPI request containing Avro-serialized data
+
+    Returns:
+        Response with Avro-serialized timestamp data
+    """
+    # Read request body
+    body = await request.body()
+
+    # Deserialize Avro request
+    reader = avro.io.DatumReader(TIMESTAMP_SCHEMA)
+    bytes_reader = io.BytesIO(body)
+    decoder = avro.io.BinaryDecoder(bytes_reader)
+    data = reader.read(decoder)
+
+    # Add response timestamp
+    data["response_timestamp"] = datetime.now().isoformat()
+
+    # Serialize response
+    writer = avro.io.DatumWriter(TIMESTAMP_SCHEMA)
+    bytes_writer = io.BytesIO()
+    encoder = avro.io.BinaryEncoder(bytes_writer)
+    writer.write(data, encoder)
+
+    return Response(content=bytes_writer.getvalue(), media_type="application/avro")
+
+
+@app.get("/")
+async def root():
+    """Health check endpoint."""
+    return {
+        "service": "AVRO Responder",
+        "status": "running",
+        "format": "Apache Avro Binary",
+        "message": "Ready to process Avro requests",
+    }
