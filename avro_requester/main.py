@@ -8,27 +8,23 @@ response times for performance analysis.
 
 import asyncio
 import io
+import sys
 from datetime import datetime
+from pathlib import Path
 
-import avro.schema
-import httpx
-from avro.datafile import DataFileWriter
-from avro.io import BinaryDecoder, DatumReader, DatumWriter
-from fastapi import FastAPI
+# Add parent directory to path for common imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+import avro.schema  # noqa: E402
+import httpx  # noqa: E402
+from avro.datafile import DataFileWriter  # noqa: E402
+from avro.io import BinaryDecoder, DatumReader, DatumWriter  # noqa: E402
+from fastapi import FastAPI  # noqa: E402
+
+from common import TIMESTAMP_SCHEMA_AVRO  # noqa: E402
 
 # Avro schema for timestamp messages
-TIMESTAMP_SCHEMA = avro.schema.parse(
-    """
-{
-    "type": "record",
-    "name": "Timestamp",
-    "fields": [
-        {"name": "request_timestamp", "type": "string"},
-        {"name": "response_timestamp", "type": "string"}
-    ]
-}
-"""
-)
+TIMESTAMP_SCHEMA = avro.schema.parse(TIMESTAMP_SCHEMA_AVRO)
 
 # Configuration
 AVRO_RESPONDER_URL = "http://localhost:8000/timestamp"
